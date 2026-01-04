@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { register as registerUser, clearError } from '../store/slices';
+import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
+import { register as registerUser, clearError } from '../store/slices/authSlice';
 
 interface RegisterForm {
     name: string;
@@ -14,6 +14,7 @@ export const RegisterPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { loading, error } = useAppSelector((state) => state.auth);
+
     const {
         register,
         handleSubmit,
@@ -33,7 +34,7 @@ export const RegisterPage = () => {
             })
         );
         if (registerUser.fulfilled.match(result)) {
-            navigate('/');
+            navigate(`/verify?email=${encodeURIComponent(data.email)}`);
         }
     };
 
@@ -120,8 +121,12 @@ export const RegisterPage = () => {
                         )}
                     </div>
 
-                    <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-                        {loading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+                    <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-4">
+                        {loading ? (
+                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
+                        ) : (
+                            'Kayıt Ol'
+                        )}
                     </button>
                 </form>
 

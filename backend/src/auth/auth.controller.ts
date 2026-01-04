@@ -9,9 +9,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, AuthResponseDto } from './dto';
+import { RegisterDto, LoginDto } from './dto';
 import { JwtAuthGuard, JwtRefreshGuard } from './guards';
 import { GetUser } from './decorators';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @ApiTags('auth')
 @Controller('api/auth')
@@ -20,14 +21,21 @@ export class AuthController {
 
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
-    async register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
+    async register(@Body() dto: RegisterDto) {
         return this.authService.register(dto);
+    }
+
+    @Post('verify')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Verify email with code' })
+    async verify(@Body() dto: VerifyEmailDto) {
+        return this.authService.verifyEmail(dto);
     }
 
     @Post('login')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Login user' })
-    async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
+    async login(@Body() dto: LoginDto) {
         return this.authService.login(dto);
     }
 

@@ -17,11 +17,23 @@ export const register = createAsyncThunk(
     async (data: { email: string; password: string; name: string }, { rejectWithValue }) => {
         try {
             const response = await authService.register(data);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Registration failed');
+        }
+    }
+);
+
+export const verify = createAsyncThunk(
+    'auth/verify',
+    async (data: { email: string; code: string }, { rejectWithValue }) => {
+        try {
+            const response = await authService.verify(data);
             localStorage.setItem('accessToken', response.accessToken);
             localStorage.setItem('refreshToken', response.refreshToken);
             return response;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || 'Registration failed');
+            return rejectWithValue(error.response?.data?.message || 'Verification failed');
         }
     }
 );
@@ -77,14 +89,26 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(register.fulfilled, (state, action) => {
+            .addCase(register.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            // Verify
+            .addCase(verify.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verify.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
                 state.refreshToken = action.payload.refreshToken;
             })
-            .addCase(register.rejected, (state, action) => {
+            .addCase(verify.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })

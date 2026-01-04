@@ -27,5 +27,13 @@ export default () => ({
         openaiKey: process.env.OPENAI_API_KEY,
         geminiKey: process.env.GEMINI_API_KEY,
     },
+    mail: {
+        host: process.env.MAIL_HOST,
+        port: parseInt(process.env.MAIL_PORT ?? '587', 10),
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+        from: process.env.MAIL_FROM,
+        secure: process.env.MAIL_SECURE === 'true',
+    },
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
 });

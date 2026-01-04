@@ -1,9 +1,11 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma';
 import { RegisterDto, LoginDto } from './dto';
+import { MailService } from '../mail/mail.service';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +13,7 @@ export class AuthService {
         private prisma: PrismaService,
         private jwtService: JwtService,
         private configService: ConfigService,
+        private mailService: MailService,
     ) { }
 
     async register(dto: RegisterDto) {
@@ -23,12 +26,48 @@ export class AuthService {
         }
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         const user = await this.prisma.user.create({
             data: {
                 email: dto.email,
                 password: hashedPassword,
                 name: dto.name,
+                verificationCode,
+                isVerified: false,
+            },
+        });
+
+        await this.mailService.sendVerificationEmail(user.email, verificationCode);
+
+        return {
+            message: 'Registration successful. Please check your email for verification code.',
+            email: user.email,
+        };
+    }
+
+    async verifyEmail(dto: VerifyEmailDto) {
+        const user = await this.prisma.user.findUnique({
+            where: { email: dto.email },
+        });
+
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+
+        if (user.isVerified) {
+            throw new BadRequestException('Email already verified');
+        }
+
+        if (user.verificationCode !== dto.code) {
+            throw new BadRequestException('Invalid verification code');
+        }
+
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                isVerified: true,
+                verificationCode: null,
             },
         });
 
@@ -36,6 +75,7 @@ export class AuthService {
         await this.updateRefreshToken(user.id, tokens.refreshToken);
 
         return {
+            message: 'Email verified successfully',
             ...tokens,
             user: {
                 id: user.id,
@@ -53,6 +93,10 @@ export class AuthService {
 
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
+        }
+
+        if (!user.isVerified) {
+            throw new UnauthorizedException('Please verify your email first');
         }
 
         const passwordValid = await bcrypt.compare(dto.password, user.password);

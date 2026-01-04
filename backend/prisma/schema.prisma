@@ -7,6 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,6 +16,8 @@ model User {
   password      String
   name          String
   role          Role      @default(USER)
+  isVerified    Boolean   @default(false)
+  verificationCode String?
   refreshToken  String?
   orders        Order[]
   createdAt     DateTime  @default(now())

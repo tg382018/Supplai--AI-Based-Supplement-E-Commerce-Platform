@@ -7,9 +7,19 @@ interface AuthResponse {
     user: User;
 }
 
+interface RegisterResponse {
+    message: string;
+    email: string;
+}
+
 export const authService = {
-    async register(data: { email: string; password: string; name: string }): Promise<AuthResponse> {
-        const response = await api.post<AuthResponse>('/auth/register', data);
+    async register(data: { email: string; password: string; name: string }): Promise<RegisterResponse> {
+        const response = await api.post<RegisterResponse>('/auth/register', data);
+        return response.data;
+    },
+
+    async verify(data: { email: string; code: string }): Promise<AuthResponse> {
+        const response = await api.post<AuthResponse>('/auth/verify', data);
         return response.data;
     },
 

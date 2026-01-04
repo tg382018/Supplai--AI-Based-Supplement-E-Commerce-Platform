@@ -7,6 +7,7 @@ import {
   ProductsPage,
   LoginPage,
   RegisterPage,
+  VerifyPage,
   CartPage,
   AiAdvisorPage,
 } from './pages';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify" element={<VerifyPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/ai-advisor" element={<AiAdvisorPage />} />
         </Routes>
