@@ -36,6 +36,31 @@ services:
       timeout: 20s
       retries: 3
 
+  backend:
+    build: ./backend
+    container_name: supplai-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://supplai:supplai123@postgres:5432/supplai?schema=public
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: supplai-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
   minio_data:
