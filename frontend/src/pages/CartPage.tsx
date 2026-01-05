@@ -1,8 +1,25 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Grid,
+    Stack,
+    Button,
+    IconButton,
+    Paper,
+    Divider,
+    Avatar,
+    Link,
+    Alert,
+    CircularProgress,
+    Fade
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { removeFromCart, updateQuantity, clearCart } from '../store/slices';
 import { orderService } from '../services';
 import { useState } from 'react';
+import { Footer } from '../components';
 import {
     Trash2,
     Minus,
@@ -52,189 +69,317 @@ export const CartPage = () => {
 
     if (items.length === 0) {
         return (
-            <div className="pt-24 pb-48 min-h-screen bg-background flex flex-col items-center justify-center">
-                <div className="max-w-md w-full px-6 text-center animate-fade-up">
-                    <div className="w-24 h-24 bg-gray-50 rounded-[32px] flex items-center justify-center mx-auto mb-8">
-                        <PackageSearch className="w-12 h-12 text-gray-200" />
-                    </div>
-                    <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Sepetiniz Boş</h1>
-                    <p className="text-gray-500 mb-10 leading-relaxed text-lg">
-                        Görünüşe göre henüz sepetinize bir ürün eklememişsiniz. En iyi ürünlerimizi keşfetmeye ne dersiniz?
-                    </p>
-                    <Link to="/products" className="btn-primary inline-flex items-center gap-2 group w-full py-4 justify-center shadow-xl shadow-emerald-100">
-                        <ShoppingBag className="w-5 h-5" />
-                        Alışverişe Başla
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                </div>
-            </div>
+            <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 24 }, pb: 12 }}>
+                <Container maxWidth="sm">
+                    <Fade in timeout={800}>
+                        <Box sx={{ textAlign: 'center' }}>
+                            <Avatar
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    bgcolor: 'grey.50',
+                                    mx: 'auto',
+                                    mb: 4,
+                                    borderRadius: 8
+                                }}
+                            >
+                                <PackageSearch size={48} color="#cbd5e1" />
+                            </Avatar>
+                            <Typography variant="h3" sx={{ mb: 2, fontWeight: 900 }}>Sepetiniz Boş</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ mb: 6, fontSize: '1.1rem', lineHeight: 1.8 }}>
+                                Görünüşe göre henüz sepetinize bir ürün eklememişsiniz. En iyi ürünlerimizi keşfetmeye ne dersiniz?
+                            </Typography>
+                            <Button
+                                component={RouterLink}
+                                to="/products"
+                                variant="contained"
+                                size="large"
+                                startIcon={<ShoppingBag size={20} />}
+                                endIcon={<ArrowRight size={20} />}
+                                sx={{
+                                    borderRadius: 4,
+                                    px: 6,
+                                    py: 2,
+                                    fontWeight: 900,
+                                    boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                                }}
+                            >
+                                Alışverişe Başla
+                            </Button>
+                        </Box>
+                    </Fade>
+                </Container>
+            </Box>
         );
     }
 
     return (
-        <div className="pt-12 pb-24 min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-end gap-4 mb-12 animate-fade-up">
-                    <div className="p-3 bg-emerald-50 rounded-2xl">
-                        <ShoppingBag className="w-8 h-8 text-primary" />
-                    </div>
-                    <div>
-                        <span className="text-sm font-black text-primary uppercase tracking-widest">Siparişiniz</span>
-                        <h1 className="text-5xl font-black text-gray-900 tracking-tight">Sepetim</h1>
-                    </div>
-                </div>
+        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
+            <Container maxWidth="lg">
+                <Stack direction="row" spacing={3} alignItems="flex-end" sx={{ mb: 8 }}>
+                    <Box sx={{ p: 2, bgcolor: 'emerald.50', borderRadius: 4, display: 'flex' }}>
+                        <ShoppingBag size={32} color="#10b981" />
+                    </Box>
+                    <Box>
+                        <Typography variant="overline" color="primary" sx={{ fontWeight: 900, letterSpacing: '0.2em' }}>
+                            Siparişiniz
+                        </Typography>
+                        <Typography variant="h2">Sepetim</Typography>
+                    </Box>
+                </Stack>
 
-                <div className="grid lg:grid-cols-12 gap-12">
-                    {/* Cart Items Area */}
-                    <div className="lg:col-span-8 space-y-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                        <div className="flex items-center justify-between pb-6 border-b border-gray-100">
-                            <h2 className="text-lg font-bold text-gray-900">{items.length} Ürün</h2>
-                            <button
-                                onClick={() => dispatch(clearCart())}
-                                className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-red-500 transition-colors"
+                <Fade in timeout={600}>
+                    <Grid container spacing={6}>
+                        {/* Cart Items Area */}
+                        <Grid size={{ xs: 12, lg: 8 }}>
+                            <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                sx={{ mb: 4, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}
                             >
-                                <RefreshCw className="w-4 h-4" />
-                                Sepeti Temizle
-                            </button>
-                        </div>
+                                <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                                    {items.length} Ürün
+                                </Typography>
+                                <Button
+                                    startIcon={<RefreshCw size={16} />}
+                                    onClick={() => dispatch(clearCart())}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        fontWeight: 800,
+                                        '&:hover': { color: 'error.main', bgcolor: 'error.lighter' }
+                                    }}
+                                >
+                                    Sepeti Temizle
+                                </Button>
+                            </Stack>
 
-                        <div className="space-y-4">
-                            {items.map((item) => (
-                                <div key={item.product.id} className="bg-white rounded-[32px] p-6 flex flex-col sm:flex-row gap-6 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-100/50 transition-all group">
-                                    {/* Image Container */}
-                                    <Link to={`/products/${item.product.id}`} className="w-full sm:w-32 h-32 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 relative">
-                                        {item.product.imageUrl ? (
-                                            <img
-                                                src={item.product.imageUrl}
-                                                alt={item.product.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-emerald-50 text-emerald-100">
-                                                <PackageSearch className="w-12 h-12" />
-                                            </div>
-                                        )}
-                                    </Link>
+                            <Stack spacing={3}>
+                                {items.map((item) => (
+                                    <Paper
+                                        key={item.product.id}
+                                        elevation={0}
+                                        sx={{
+                                            p: 3,
+                                            borderRadius: 8,
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                                boxShadow: '0 20px 40px rgba(0,0,0,0.04)',
+                                                borderColor: 'primary.light'
+                                            }
+                                        }}
+                                    >
+                                        <Grid container spacing={4} alignItems="center">
+                                            <Grid size={{ xs: 12, sm: 3, md: 2 }}>
+                                                <Link
+                                                    component={RouterLink}
+                                                    to={`/products/${item.product.id}`}
+                                                    sx={{ display: 'block', textDecoration: 'none' }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            aspectRatio: '1/1',
+                                                            borderRadius: 4,
+                                                            overflow: 'hidden',
+                                                            bgcolor: 'grey.50',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center'
+                                                        }}
+                                                    >
+                                                        {item.product.imageUrl ? (
+                                                            <Box
+                                                                component="img"
+                                                                src={item.product.imageUrl}
+                                                                alt={item.product.name}
+                                                                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                            />
+                                                        ) : (
+                                                            <PackageSearch size={32} color="#cbd5e1" />
+                                                        )}
+                                                    </Box>
+                                                </Link>
+                                            </Grid>
 
-                                    {/* Details Area */}
-                                    <div className="flex-1 flex flex-col justify-between py-1">
-                                        <div>
-                                            <div className="flex items-start justify-between">
-                                                <div>
-                                                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 block">
+                                            <Grid size={{ xs: 12, sm: 6, md: 7 }}>
+                                                <Box>
+                                                    <Typography variant="caption" color="primary" sx={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                                                         {item.product.category?.name || 'GENEL'}
-                                                    </span>
+                                                    </Typography>
                                                     <Link
+                                                        component={RouterLink}
                                                         to={`/products/${item.product.id}`}
-                                                        className="text-xl font-bold text-gray-900 hover:text-primary transition-colors line-clamp-1"
+                                                        sx={{
+                                                            display: 'block',
+                                                            variant: 'h5',
+                                                            fontWeight: 800,
+                                                            color: 'text.primary',
+                                                            textDecoration: 'none',
+                                                            mb: 2,
+                                                            '&:hover': { color: 'primary.main' }
+                                                        }}
                                                     >
                                                         {item.product.name}
                                                     </Link>
-                                                </div>
-                                                <div className="text-right">
-                                                    <span className="text-xl font-black text-gray-900">₺{item.product.price.toLocaleString('tr-TR')}</span>
-                                                    <p className="text-xs text-gray-400 mt-1">Birim Fiyat</p>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div className="flex items-center justify-between mt-6">
-                                            {/* Quantity Controls */}
-                                            <div className="flex items-center bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
-                                                <button
-                                                    onClick={() => dispatch(updateQuantity({ productId: item.product.id, quantity: item.quantity - 1 }))}
-                                                    className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:text-primary hover:border-emerald-200 transition-all shadow-sm active:scale-90"
+                                                    <Stack direction="row" spacing={1} alignItems="center">
+                                                        <Paper
+                                                            variant="outlined"
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                borderRadius: 3,
+                                                                p: 0.5,
+                                                                bgcolor: 'background.default'
+                                                            }}
+                                                        >
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => dispatch(updateQuantity({ productId: item.product.id, quantity: item.quantity - 1 }))}
+                                                                sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'emerald.50' } }}
+                                                            >
+                                                                <Minus size={14} />
+                                                            </IconButton>
+                                                            <Typography sx={{ width: 40, textAlign: 'center', fontWeight: 900 }}>
+                                                                {item.quantity}
+                                                            </Typography>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => dispatch(updateQuantity({ productId: item.product.id, quantity: item.quantity + 1 }))}
+                                                                sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'emerald.50' } }}
+                                                            >
+                                                                <Plus size={14} />
+                                                            </IconButton>
+                                                        </Paper>
+                                                    </Stack>
+                                                </Box>
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 3, md: 3 }} sx={{ textAlign: { sm: 'right' } }}>
+                                                <Box sx={{ mb: 2 }}>
+                                                    <Typography variant="h5" sx={{ fontWeight: 900 }}>
+                                                        ₺{(item.product.price * item.quantity).toLocaleString('tr-TR')}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                                        {item.quantity} x ₺{item.product.price.toLocaleString('tr-TR')}
+                                                    </Typography>
+                                                </Box>
+                                                <IconButton
+                                                    onClick={() => dispatch(removeFromCart(item.product.id))}
+                                                    sx={{
+                                                        color: 'text.disabled',
+                                                        '&:hover': { color: 'error.main', bgcolor: 'error.lighter' }
+                                                    }}
                                                 >
-                                                    <Minus className="w-4 h-4" />
-                                                </button>
-                                                <span className="w-12 text-center font-black text-gray-900">{item.quantity}</span>
-                                                <button
-                                                    onClick={() => dispatch(updateQuantity({ productId: item.product.id, quantity: item.quantity + 1 }))}
-                                                    className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:text-primary hover:border-emerald-200 transition-all shadow-sm active:scale-90"
-                                                >
-                                                    <Plus className="w-4 h-4" />
-                                                </button>
-                                            </div>
+                                                    <Trash2 size={20} />
+                                                </IconButton>
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                ))}
+                            </Stack>
+                        </Grid>
 
-                                            {/* Action Buttons */}
-                                            <button
-                                                onClick={() => dispatch(removeFromCart(item.product.id))}
-                                                className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                                                title="Ürünü Kaldır"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                        {/* Summary Sidebar */}
+                        <Grid size={{ xs: 12, lg: 4 }}>
+                            <Box sx={{ position: 'sticky', top: 100 }}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 5,
+                                        borderRadius: 10,
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        boxShadow: '0 20px 40px rgba(0,0,0,0.04)',
+                                        bgcolor: 'white'
+                                    }}
+                                >
+                                    <Typography variant="h4" sx={{ mb: 4, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                                        Sipariş Özeti
+                                    </Typography>
+                                    <Divider sx={{ mb: 4 }} />
 
-                    {/* Summary Sidebar */}
-                    <div className="lg:col-span-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-                        <div className="bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-gray-100/50 p-10 h-fit sticky top-28">
-                            <h2 className="text-2xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-tight">Sipariş Özeti</h2>
+                                    <Stack spacing={3} sx={{ mb: 6 }}>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography color="text.secondary" sx={{ fontWeight: 600 }}>Ara Toplam</Typography>
+                                            <Typography sx={{ fontWeight: 700 }}>₺{total.toLocaleString('tr-TR')}</Typography>
+                                        </Stack>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <Typography color="text.secondary" sx={{ fontWeight: 600 }}>Tahmini Kargo</Typography>
+                                            <Chip label="Ücretsiz" color="primary" size="small" sx={{ fontWeight: 900, height: 24 }} />
+                                        </Stack>
+                                        <Divider />
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
+                                            <Typography variant="h6" sx={{ fontWeight: 800 }}>Toplam</Typography>
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Typography variant="h3" color="primary" sx={{ lineHeight: 1 }}>
+                                                    ₺{total.toLocaleString('tr-TR')}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.disabled', textTransform: 'uppercase' }}>
+                                                    KDV Dahil
+                                                </Typography>
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
 
-                            <div className="space-y-6 mb-10">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-500 font-medium">Ara Toplam</span>
-                                    <span className="text-lg font-bold text-gray-900">₺{total.toLocaleString('tr-TR')}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-500 font-medium">Tahmini Kargo</span>
-                                    <span className="text-primary font-black uppercase text-xs tracking-widest bg-emerald-50 px-3 py-1.5 rounded-lg">Ücretsiz</span>
-                                </div>
-                                <div className="pt-6 border-t border-gray-100 flex justify-between items-center">
-                                    <span className="text-xl font-bold text-gray-900">Toplam</span>
-                                    <div className="text-right">
-                                        <span className="text-3xl font-black text-primary">₺{total.toLocaleString('tr-TR')}</span>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">KDV DAHİL</p>
-                                    </div>
-                                </div>
-                            </div>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        size="large"
+                                        disabled={loading}
+                                        onClick={handleCheckout}
+                                        endIcon={!loading && <ArrowRight size={20} />}
+                                        sx={{
+                                            py: 2,
+                                            borderRadius: 6,
+                                            fontSize: '1.1rem',
+                                            boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                                        }}
+                                    >
+                                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Ödemeye Geç'}
+                                    </Button>
 
-                            <button
-                                onClick={handleCheckout}
-                                disabled={loading}
-                                className="btn-primary w-full py-5 flex items-center justify-center gap-3 shadow-xl shadow-emerald-100 group"
-                            >
-                                {loading ? (
-                                    <>
-                                        <RefreshCw className="w-5 h-5 animate-spin" />
-                                        İşleniyor...
-                                    </>
-                                ) : (
-                                    <>
-                                        Ödemeye Geç
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                )}
-                            </button>
+                                    {!isAuthenticated && (
+                                        <Alert
+                                            severity="info"
+                                            sx={{
+                                                mt: 3,
+                                                borderRadius: 4,
+                                                '& .MuiAlert-message': { fontWeight: 700, fontSize: '0.8rem' }
+                                            }}
+                                        >
+                                            Ödeme yapmak için <Link component={RouterLink} to="/login" sx={{ fontWeight: 900 }}>Giriş Yapılmalı</Link>
+                                        </Alert>
+                                    )}
 
-                            {!isAuthenticated && (
-                                <div className="mt-6 p-4 bg-orange-50 rounded-2xl border border-orange-100 text-center">
-                                    <p className="text-xs font-bold text-orange-800 leading-relaxed uppercase tracking-wider">
-                                        Ödeme yapmak için <Link to="/login" className="text-primary hover:underline">Giriş Yapılmalı</Link>
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Trust Badges */}
-                            <div className="grid grid-cols-2 gap-4 mt-10">
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl text-center">
-                                    <ShieldCheck className="w-6 h-6 text-gray-400 mb-2" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Güvenli Ödeme</span>
-                                </div>
-                                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl text-center">
-                                    <Truck className="w-6 h-6 text-gray-400 mb-2" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Hızlı Kargo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                    {/* Trust Badges */}
+                                    <Grid container spacing={2} sx={{ mt: 6 }}>
+                                        <Grid size={{ xs: 6 }}>
+                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 4 }}>
+                                                <ShieldCheck size={24} color="#94a3b8" />
+                                                <Typography variant="caption" sx={{ display: 'block', mt: 1, fontWeight: 800, color: 'text.secondary' }}>
+                                                    GÜVENLİ
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                        <Grid size={{ xs: 6 }}>
+                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 4 }}>
+                                                <Truck size={24} color="#94a3b8" />
+                                                <Typography variant="caption" sx={{ display: 'block', mt: 1, fontWeight: 800, color: 'text.secondary' }}>
+                                                    HIZLI
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Fade>
+            </Container>
+            <Footer />
+        </Box>
     );
 };

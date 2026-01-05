@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Grid,
+    Stack,
+    TextField,
+    InputAdornment,
+    Button,
+    Pagination,
+    CircularProgress,
+    Paper,
+    Fade,
+    Avatar
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { fetchProducts, fetchCategories, setSearch, setCategory, setPage } from '../store/slices';
-import { ProductCard } from '../components';
+import { ProductCard, Footer } from '../components';
 import {
     Search as SearchIcon,
     Filter,
-    ChevronLeft,
-    ChevronRight,
     LayoutGrid,
     RefreshCw,
     ShoppingBag
@@ -53,142 +66,235 @@ export const ProductsPage = () => {
         }
     };
 
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+        dispatch(setPage(value));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
-        <div className="pt-12 pb-24 min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Page Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 animate-fade-up">
-                    <div className="max-w-xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-emerald-50 rounded-xl">
-                                <ShoppingBag className="w-6 h-6 text-primary" />
-                            </div>
-                            <span className="text-sm font-black text-primary uppercase tracking-widest">Mağaza</span>
-                        </div>
-                        <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">Tüm Ürünler</h1>
-                        <p className="text-gray-500 text-lg">Hangi hedefe ulaşmak istiyorsanız, ihtiyacınız olan en kaliteli supplementleri burada bulabilirsiniz.</p>
-                    </div>
-
-                    {/* Search Bar */}
-                    <form onSubmit={handleSearch} className="relative group min-w-[320px]">
-                        <input
-                            type="text"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            placeholder="İstediğiniz ürünü arayın..."
-                            className="w-full bg-white text-gray-900 pl-12 pr-6 py-4 rounded-2xl border border-gray-100 focus:border-primary focus:ring-4 focus:ring-emerald-50 transition-all outline-none shadow-sm shadow-gray-100"
-                        />
-                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors" />
-                    </form>
-                </div>
-
-                {/* Filters */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-400 font-bold text-xs uppercase tracking-widest mr-2">
-                            <Filter className="w-4 h-4" /> Filtrele:
-                        </div>
-                        <button
-                            onClick={() => handleCategoryChange(null)}
-                            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${!selectedCategory
-                                    ? 'bg-primary text-white shadow-lg shadow-emerald-100'
-                                    : 'bg-white text-gray-500 border border-gray-100 hover:border-emerald-200'
-                                }`}
+        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
+            <Container maxWidth="lg">
+                <Fade in timeout={600}>
+                    <Box>
+                        {/* Page Header */}
+                        <Stack
+                            direction={{ xs: 'column', md: 'row' }}
+                            alignItems={{ md: 'flex-end' }}
+                            justifyContent="space-between"
+                            spacing={4}
+                            sx={{ mb: 8 }}
                         >
-                            Tümü
-                        </button>
-                        {categories.map((category) => (
-                            <button
-                                key={category.id}
-                                onClick={() => handleCategoryChange(category.id)}
-                                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${selectedCategory === category.id
-                                        ? 'bg-primary text-white shadow-lg shadow-emerald-100'
-                                        : 'bg-white text-gray-500 border border-gray-100 hover:border-emerald-200'
-                                    }`}
+                            <Box sx={{ maxWidth: 600 }}>
+                                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                    <Box sx={{ p: 1, bgcolor: 'emerald.50', borderRadius: 2, display: 'flex' }}>
+                                        <ShoppingBag size={24} color="#10b981" />
+                                    </Box>
+                                    <Typography variant="overline" color="primary" sx={{ fontWeight: 900, letterSpacing: '0.2em' }}>
+                                        Mağaza
+                                    </Typography>
+                                </Stack>
+                                <Typography variant="h2" sx={{ mb: 2 }}>Tüm Ürünler</Typography>
+                                <Typography variant="h6" color="text.secondary">
+                                    Hangi hedefe ulaşmak istiyorsanız, ihtiyacınız olan en kaliteli supplementleri burada bulabilirsiniz.
+                                </Typography>
+                            </Box>
+
+                            {/* Search Bar */}
+                            <Box component="form" onSubmit={handleSearch} sx={{ width: { xs: '100%', md: 400 } }}>
+                                <TextField
+                                    fullWidth
+                                    placeholder="İstediğiniz ürünü arayın..."
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon size={20} color="#94a3b8" />
+                                            </InputAdornment>
+                                        ),
+                                        sx: {
+                                            borderRadius: 4,
+                                            bgcolor: 'white',
+                                            '& fieldset': { borderColor: 'grey.100' },
+                                            '&:hover fieldset': { borderColor: 'primary.light' },
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        }
+                                    }}
+                                />
+                            </Box>
+                        </Stack>
+
+                        {/* Filters */}
+                        <Stack
+                            direction={{ xs: 'column', lg: 'row' }}
+                            alignItems={{ lg: 'center' }}
+                            justifyContent="space-between"
+                            spacing={4}
+                            sx={{ mb: 8 }}
+                        >
+                            <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+                                <Paper
+                                    sx={{
+                                        px: 2,
+                                        py: 1,
+                                        bgcolor: 'white',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        borderRadius: 2.5,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}
+                                >
+                                    <Filter size={16} color="#94a3b8" />
+                                    <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.1em' }}>
+                                        FİLTRELE:
+                                    </Typography>
+                                </Paper>
+
+                                <Button
+                                    variant={!selectedCategory ? 'contained' : 'outlined'}
+                                    onClick={() => handleCategoryChange(null)}
+                                    sx={{
+                                        borderRadius: 2.5,
+                                        px: 3,
+                                        fontWeight: 800,
+                                        boxShadow: !selectedCategory ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
+                                    }}
+                                >
+                                    Tümü
+                                </Button>
+                                {categories.map((category) => (
+                                    <Button
+                                        key={category.id}
+                                        variant={selectedCategory === category.id ? 'contained' : 'outlined'}
+                                        onClick={() => handleCategoryChange(category.id)}
+                                        sx={{
+                                            borderRadius: 2.5,
+                                            px: 3,
+                                            fontWeight: 800,
+                                            boxShadow: selectedCategory === category.id ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
+                                        }}
+                                    >
+                                        {category.name}
+                                    </Button>
+                                ))}
+                            </Stack>
+
+                            <Paper
+                                sx={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 1.5,
+                                    px: 2.5,
+                                    py: 1,
+                                    borderRadius: 3,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    bgcolor: 'white'
+                                }}
                             >
-                                {category.name}
-                            </button>
-                        ))}
-                    </div>
+                                <LayoutGrid size={16} color="#94a3b8" />
+                                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                                    {products.length} Ürün Listeleniyor
+                                </Typography>
+                            </Paper>
+                        </Stack>
 
-                    <div className="flex items-center gap-4 text-xs font-bold text-gray-400 bg-white px-4 py-2 rounded-xl border border-gray-100">
-                        <LayoutGrid className="w-4 h-4" />
-                        {products.length} Ürün Listeleniyor
-                    </div>
-                </div>
-
-                {/* Products Grid */}
-                {loading ? (
-                    <div className="flex flex-col justify-center items-center py-32 animate-pulse">
-                        <div className="w-16 h-16 border-4 border-emerald-50 border-t-primary rounded-full animate-spin mb-4" />
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs">Yükleniyor...</p>
-                    </div>
-                ) : products.length === 0 ? (
-                    <div className="text-center py-32 bg-white rounded-[40px] border-4 border-dashed border-gray-50 animate-fade-up">
-                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                            <SearchIcon className="w-10 h-10 text-gray-200" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Ürün Bulunamadı</h2>
-                        <p className="text-gray-500 mb-8">Aradığınız kriterlere uygun bir ürün bulamadık. Lütfen farklı anahtar kelimeler deneyin.</p>
-                        <button
-                            onClick={() => {
-                                setSearchInput('');
-                                dispatch(setSearch(''));
-                                dispatch(setCategory(null));
-                                setSearchParams({});
-                            }}
-                            className="btn-secondary"
-                        >
-                            <RefreshCw className="w-4 h-4 mr-2" />
-                            Aramayı Sıfırla
-                        </button>
-                    </div>
-                ) : (
-                    <div className="animate-fade-up" style={{ animationDelay: '0.2s' }}>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                            {products.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </div>
-
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-4 mt-20">
-                                <button
-                                    onClick={() => dispatch(setPage(currentPage - 1))}
-                                    disabled={currentPage === 1}
-                                    className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-primary hover:border-emerald-200 disabled:opacity-30 disabled:hover:border-gray-100 disabled:hover:text-gray-400 transition-all shadow-sm"
+                        {/* Products Content */}
+                        {loading ? (
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 20 }}>
+                                <CircularProgress size={60} thickness={4} color="primary" />
+                                <Typography variant="overline" sx={{ mt: 3, fontWeight: 900, color: 'text.secondary', letterSpacing: '0.2em' }}>
+                                    Yükleniyor...
+                                </Typography>
+                            </Box>
+                        ) : products.length === 0 ? (
+                            <Paper
+                                variant="outlined"
+                                sx={{
+                                    textAlign: 'center',
+                                    py: 12,
+                                    borderRadius: 10,
+                                    borderStyle: 'dashed',
+                                    borderWidth: 4,
+                                    bgcolor: 'white'
+                                }}
+                            >
+                                <Avatar
+                                    sx={{
+                                        width: 80,
+                                        height: 80,
+                                        bgcolor: 'grey.50',
+                                        mx: 'auto',
+                                        mb: 3,
+                                        color: 'grey.300'
+                                    }}
                                 >
-                                    <ChevronLeft className="w-6 h-6" />
-                                </button>
-
-                                <div className="flex gap-2">
-                                    {[...Array(totalPages)].map((_, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => dispatch(setPage(i + 1))}
-                                            className={`w-12 h-12 rounded-2xl font-black transition-all ${currentPage === i + 1
-                                                    ? 'bg-primary text-white shadow-lg shadow-emerald-100'
-                                                    : 'bg-white text-gray-400 border border-gray-100 hover:border-emerald-200'
-                                                }`}
-                                        >
-                                            {i + 1}
-                                        </button>
+                                    <SearchIcon size={40} />
+                                </Avatar>
+                                <Typography variant="h4" sx={{ mb: 2 }}>Ürün Bulunamadı</Typography>
+                                <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
+                                    Aradığınız kriterlere uygun bir ürün bulamadık. Lütfen farklı anahtar kelimeler deneyin.
+                                </Typography>
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    startIcon={<RefreshCw size={18} />}
+                                    onClick={() => {
+                                        setSearchInput('');
+                                        dispatch(setSearch(''));
+                                        dispatch(setCategory(null));
+                                        setSearchParams({});
+                                    }}
+                                    sx={{ borderRadius: 3, px: 4, py: 1.5, fontWeight: 800 }}
+                                >
+                                    Aramayı Sıfırla
+                                </Button>
+                            </Paper>
+                        ) : (
+                            <Box>
+                                <Grid container spacing={4}>
+                                    {products.map((product) => (
+                                        <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={product.id}>
+                                            <ProductCard product={product} />
+                                        </Grid>
                                     ))}
-                                </div>
+                                </Grid>
 
-                                <button
-                                    onClick={() => dispatch(setPage(currentPage + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-primary hover:border-emerald-200 disabled:opacity-30 disabled:hover:border-gray-100 disabled:hover:text-gray-400 transition-all shadow-sm"
-                                >
-                                    <ChevronRight className="w-6 h-6" />
-                                </button>
-                            </div>
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+                                        <Pagination
+                                            count={totalPages}
+                                            page={currentPage}
+                                            onChange={handlePageChange}
+                                            color="primary"
+                                            size="large"
+                                            sx={{
+                                                '& .MuiPaginationItem-root': {
+                                                    borderRadius: 4,
+                                                    fontWeight: 900,
+                                                    height: 48,
+                                                    minWidth: 48,
+                                                    border: '1px solid',
+                                                    borderColor: 'divider',
+                                                    bgcolor: 'white'
+                                                },
+                                                '& .Mui-selected': {
+                                                    boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.2)'
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                )}
+                            </Box>
                         )}
-                    </div>
-                )}
-            </div>
-        </div>
+                    </Box>
+                </Fade>
+            </Container>
+            <Footer />
+        </Box>
     );
 };

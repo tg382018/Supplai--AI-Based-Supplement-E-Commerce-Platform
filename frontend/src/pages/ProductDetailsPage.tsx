@@ -1,9 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Grid,
+    Stack,
+    Button,
+    IconButton,
+    Chip,
+    Paper,
+    CircularProgress,
+    Avatar,
+    Divider,
+    Fade
+} from '@mui/material';
 import { useAppDispatch } from '../hooks';
 import { addToCart } from '../store/slices';
 import { productService } from '../services';
 import type { Product } from '../types';
+import { Footer } from '../components';
 import {
     ChevronLeft,
     ShoppingCart,
@@ -14,7 +30,8 @@ import {
     Sparkles,
     CheckCircle2,
     Info,
-    PackageSearch
+    PackageSearch,
+    RefreshCw
 } from 'lucide-react';
 
 export const ProductDetailsPage = () => {
@@ -48,177 +65,287 @@ export const ProductDetailsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen bg-background">
-                <div className="w-16 h-16 border-4 border-emerald-50 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs">Ürün Bilgileri Hesaplanıyor...</p>
-            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'background.default' }}>
+                <CircularProgress size={60} thickness={4} color="primary" />
+                <Typography variant="overline" sx={{ mt: 3, fontWeight: 900, color: 'text.secondary', letterSpacing: '0.2em' }}>
+                    Ürün Bilgileri Hesaplanıyor...
+                </Typography>
+            </Box>
         );
     }
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mb-6">
-                    <PackageSearch className="w-10 h-10 text-gray-200" />
-                </div>
-                <h1 className="text-3xl font-black text-gray-900 mb-2">Ürün Bulunamadı</h1>
-                <p className="text-gray-500 mb-8 max-w-sm">Aradığınız ürün sitemizde bulunmuyor veya kaldırılmış olabilir.</p>
-                <button onClick={() => navigate('/products')} className="btn-secondary">
+            <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 4, textAlign: 'center', bgcolor: 'background.default' }}>
+                <Avatar sx={{ width: 80, height: 80, bgcolor: 'grey.50', mb: 3, color: 'grey.300' }}>
+                    <PackageSearch size={40} />
+                </Avatar>
+                <Typography variant="h3" sx={{ mb: 1 }}>Ürün Bulunamadı</Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 400 }}>
+                    Aradığınız ürün sitemizde bulunmuyor veya kaldırılmış olabilir.
+                </Typography>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => navigate('/products')}
+                    sx={{ borderRadius: 3, px: 4, py: 1.5, fontWeight: 800 }}
+                >
                     Mağazaya Dön
-                </button>
-            </div>
+                </Button>
+            </Box>
         );
     }
 
     return (
-        <div className="pt-12 pb-24 min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Breadcrumbs / Back Button */}
-                <button
+        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
+            <Container maxWidth="lg">
+                <Button
                     onClick={() => navigate(-1)}
-                    className="group flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-primary transition-all mb-12 animate-fade-up"
+                    startIcon={<ChevronLeft size={20} />}
+                    sx={{
+                        mb: 6,
+                        fontWeight: 900,
+                        color: 'text.secondary',
+                        '&:hover': { color: 'primary.main' }
+                    }}
                 >
-                    <div className="p-2 bg-white border border-gray-100 rounded-xl group-hover:border-emerald-200 shadow-sm transition-all">
-                        <ChevronLeft className="w-4 h-4" />
-                    </div>
-                    GERİ DÖN
-                </button>
+                    MAĞAZAYA DÖN
+                </Button>
 
-                <div className="grid lg:grid-cols-12 gap-16">
-                    {/* Left: Product Media */}
-                    <div className="lg:col-span-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                        <div className="aspect-square bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden flex items-center justify-center p-12 group relative">
-                            {product.imageUrl ? (
-                                <img
-                                    src={product.imageUrl}
-                                    alt={product.name}
-                                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-[32px] text-emerald-100">
-                                    <PackageSearch className="w-32 h-32 opacity-20" />
-                                </div>
-                            )}
-
-                            {/* Badges */}
-                            <div className="absolute top-8 left-8 flex flex-col gap-3">
-                                {product.tags.map((tag) => (
-                                    <span key={tag} className="px-4 py-2 bg-white/90 backdrop-blur rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-900 shadow-lg border border-gray-100">
-                                        {tag.replace('_', ' ')}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right: Product Info */}
-                    <div className="lg:col-span-6 flex flex-col animate-fade-up" style={{ animationDelay: '0.2s' }}>
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="bg-emerald-50 text-primary text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-[0.2em]">
-                                    {product.category?.name || 'GENEL'}
-                                </span>
-                                {product.stock > 0 && product.stock < 10 && (
-                                    <span className="bg-orange-50 text-orange-600 text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-[0.2em] animate-pulse">
-                                        AZALAN STOK: {product.stock}
-                                    </span>
-                                )}
-                            </div>
-                            <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-6 leading-tight">
-                                {product.name}
-                            </h1>
-                            <div className="flex items-end gap-3 mb-8">
-                                <span className="text-5xl font-black text-gray-900">₺{product.price.toLocaleString('tr-TR')}</span>
-                                <span className="text-gray-400 font-bold mb-1 uppercase tracking-widest text-xs">KDV Dahil</span>
-                            </div>
-                            <p className="text-gray-500 text-lg leading-relaxed mb-10 border-l-4 border-emerald-50 pl-6 italic">
-                                "{product.description}"
-                            </p>
-                        </div>
-
-                        {/* Inventory & CTA Section */}
-                        <div className="bg-white rounded-[40px] p-8 border border-gray-100 shadow-xl shadow-gray-100/30 mb-10">
-                            <div className="flex flex-col sm:flex-row items-center gap-6">
-                                <div className="flex items-center bg-gray-50 p-2 rounded-3xl border border-gray-100 w-full sm:w-auto">
-                                    <button
-                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:text-primary hover:border-emerald-200 transition-all shadow-sm active:scale-95"
-                                    >
-                                        <Minus className="w-5 h-5" />
-                                    </button>
-                                    <span className="w-16 text-center text-xl font-black text-gray-900">{quantity}</span>
-                                    <button
-                                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                                        className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:text-primary hover:border-emerald-200 transition-all shadow-sm active:scale-95"
-                                    >
-                                        <Plus className="w-5 h-5" />
-                                    </button>
-                                </div>
-                                <button
-                                    disabled={product.stock <= 0}
-                                    onClick={handleAddToCart}
-                                    className="flex-1 w-full btn-primary py-5 rounded-[24px] text-lg font-black flex items-center justify-center gap-4 group shadow-2xl shadow-emerald-100"
+                <Fade in timeout={800}>
+                    <Grid container spacing={{ xs: 6, lg: 10 }}>
+                        {/* Left: Product Media */}
+                        <Grid size={{ xs: 12, lg: 6 }}>
+                            <Box sx={{ position: 'sticky', top: 100 }}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        aspectRatio: '1/1',
+                                        borderRadius: 10,
+                                        bgcolor: 'white',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        p: 6,
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        boxShadow: '0 20px 40px rgba(0,0,0,0.04)'
+                                    }}
                                 >
-                                    <ShoppingCart className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                                    {product.stock > 0 ? 'SEPETE EKLE' : 'STOKTA YOK'}
-                                </button>
-                            </div>
-                        </div>
+                                    {product.imageUrl ? (
+                                        <Box
+                                            component="img"
+                                            src={product.imageUrl}
+                                            alt={product.name}
+                                            sx={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'contain',
+                                                transition: 'transform 0.6s ease',
+                                                '&:hover': { transform: 'scale(1.05)' }
+                                            }}
+                                        />
+                                    ) : (
+                                        <Box sx={{ textAlign: 'center', opacity: 0.1 }}>
+                                            <PackageSearch size={120} />
+                                        </Box>
+                                    )}
 
-                        {/* Features / Benefits Grid */}
-                        <div className="grid md:grid-cols-2 gap-6 mb-12">
-                            <div className="p-6 bg-white border border-gray-100 rounded-[32px] shadow-sm">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 bg-secondary/10 rounded-xl">
-                                        <Sparkles className="w-5 h-5 text-secondary" />
-                                    </div>
-                                    <h4 className="font-bold text-gray-900 uppercase tracking-tight">Kazanımlar</h4>
-                                </div>
-                                <div className="space-y-3">
-                                    {product.benefits?.map((ben, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                                            <CheckCircle2 className="w-4 h-4 text-primary" />
-                                            {ben}
-                                        </div>
+                                    {/* Badges */}
+                                    <Stack spacing={1.5} sx={{ position: 'absolute', top: 24, left: 24 }}>
+                                        {product.tags?.map((tag) => (
+                                            <Chip
+                                                key={tag}
+                                                label={tag.replace('_', ' ')}
+                                                sx={{
+                                                    fontWeight: 900,
+                                                    bgcolor: 'rgba(255,255,255,0.9)',
+                                                    backdropFilter: 'blur(10px)',
+                                                    border: '1px solid',
+                                                    borderColor: 'divider',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.1em',
+                                                    fontSize: '0.65rem'
+                                                }}
+                                            />
+                                        ))}
+                                    </Stack>
+                                </Paper>
+                            </Box>
+                        </Grid>
+
+                        {/* Right: Product Info */}
+                        <Grid size={{ xs: 12, lg: 6 }}>
+                            <Box>
+                                <Stack direction="row" spacing={1.5} sx={{ mb: 3 }}>
+                                    <Chip
+                                        label={product.category?.name || 'GENEL'}
+                                        color="primary"
+                                        size="small"
+                                        sx={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                                    />
+                                    {product.stock > 0 && product.stock < 10 && (
+                                        <Chip
+                                            label={`AZALAN STOK: ${product.stock}`}
+                                            color="warning"
+                                            size="small"
+                                            sx={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                                        />
+                                    )}
+                                </Stack>
+
+                                <Typography variant="h1" sx={{ mb: 4, lineHeight: 1.1 }}>
+                                    {product.name}
+                                </Typography>
+
+                                <Stack direction="row" alignItems="flex-end" spacing={1.5} sx={{ mb: 6 }}>
+                                    <Typography variant="h2" color="text.primary">
+                                        ₺{product.price.toLocaleString('tr-TR')}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800, mb: 1, letterSpacing: '0.1em' }}>
+                                        KDV DAHİL
+                                    </Typography>
+                                </Stack>
+
+                                <Typography
+                                    variant="body1"
+                                    color="text.secondary"
+                                    sx={{
+                                        mb: 8,
+                                        lineHeight: 1.8,
+                                        borderLeft: '4px solid',
+                                        borderColor: 'emerald.100',
+                                        pl: 4,
+                                        fontStyle: 'italic',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    "{product.description}"
+                                </Typography>
+
+                                {/* Inventory & CTA Section */}
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 4,
+                                        borderRadius: 8,
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        mb: 6,
+                                        boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+                                    }}
+                                >
+                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+                                        <Paper
+                                            variant="outlined"
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                borderRadius: 4,
+                                                p: 0.5,
+                                                bgcolor: 'background.default'
+                                            }}
+                                        >
+                                            <IconButton
+                                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                                sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'emerald.50' } }}
+                                            >
+                                                <Minus size={20} />
+                                            </IconButton>
+                                            <Typography sx={{ width: 50, textAlign: 'center', fontWeight: 900, fontSize: '1.2rem' }}>
+                                                {quantity}
+                                            </Typography>
+                                            <IconButton
+                                                onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                                                sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'emerald.50' } }}
+                                            >
+                                                <Plus size={20} />
+                                            </IconButton>
+                                        </Paper>
+
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            size="large"
+                                            disabled={product.stock <= 0}
+                                            onClick={handleAddToCart}
+                                            startIcon={<ShoppingCart size={22} />}
+                                            sx={{
+                                                py: 2,
+                                                borderRadius: 6,
+                                                fontSize: '1.1rem',
+                                                boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                                            }}
+                                        >
+                                            {product.stock > 0 ? 'SEPETE EKLE' : 'STOKTA YOK'}
+                                        </Button>
+                                    </Stack>
+                                </Paper>
+
+                                {/* Specifications */}
+                                <Grid container spacing={4} sx={{ mb: 10 }}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <Paper sx={{ p: 4, borderRadius: 6, height: '100%' }}>
+                                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                                                <Sparkles size={20} color="#ff8e3c" />
+                                                <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>KAZANIMLAR</Typography>
+                                            </Stack>
+                                            <Stack spacing={2}>
+                                                {product.benefits?.map((ben, i) => (
+                                                    <Stack key={i} direction="row" spacing={1.5} alignItems="center">
+                                                        <CheckCircle2 size={16} color="#10b981" />
+                                                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{ben}</Typography>
+                                                    </Stack>
+                                                ))}
+                                            </Stack>
+                                        </Paper>
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <Paper sx={{ p: 4, borderRadius: 6, height: '100%' }}>
+                                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                                                <Info size={20} color="#10b981" />
+                                                <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>İÇERİKLER</Typography>
+                                            </Stack>
+                                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                                {product.ingredients?.map((ing, i) => (
+                                                    <Chip
+                                                        key={i}
+                                                        label={ing}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        sx={{ fontWeight: 800, color: 'text.secondary', borderColor: 'divider' }}
+                                                    />
+                                                ))}
+                                            </Stack>
+                                        </Paper>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Trust Badges */}
+                                <Divider sx={{ mb: 6 }} />
+                                <Grid container spacing={4}>
+                                    {[
+                                        { icon: <ShieldCheck size={28} />, label: 'GÜVENLİ ÖDEME' },
+                                        { icon: <Truck size={28} />, label: 'HIZLI KARGO' },
+                                        { icon: <RefreshCw size={28} />, label: 'KOLAY İADE' }
+                                    ].map((badge, i) => (
+                                        <Grid size={{ xs: 4 }} key={i} sx={{ textAlign: 'center' }}>
+                                            <Box sx={{ color: 'primary.main', mb: 1.5 }}>{badge.icon}</Box>
+                                            <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', letterSpacing: '0.1em', display: 'block' }}>
+                                                {badge.label}
+                                            </Typography>
+                                        </Grid>
                                     ))}
-                                </div>
-                            </div>
-
-                            <div className="p-6 bg-white border border-gray-100 rounded-[32px] shadow-sm">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 bg-primary/10 rounded-xl">
-                                        <Info className="w-5 h-5 text-primary" />
-                                    </div>
-                                    <h4 className="font-bold text-gray-900 uppercase tracking-tight">İçerikler</h4>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {product.ingredients?.map((ing, i) => (
-                                        <span key={i} className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-500">
-                                            {ing}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Trust Badges */}
-                        <div className="grid grid-cols-3 gap-4 border-t border-gray-100 pt-10">
-                            <div className="flex flex-col items-center text-center">
-                                <ShieldCheck className="w-8 h-8 text-emerald-300 mb-3" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">GÜVENLİ ÖDEME</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center">
-                                <Truck className="w-8 h-8 text-emerald-300 mb-3" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">HIZLI KARGO</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center">
-                                <RefreshCw className="w-8 h-8 text-emerald-300 mb-3" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">KOLAY İADE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                </Grid>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Fade>
+            </Container>
+            <Footer />
+        </Box>
     );
 };

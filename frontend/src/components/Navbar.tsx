@@ -1,4 +1,20 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    Badge,
+    Box,
+    Container,
+    Avatar,
+    Tooltip,
+    Menu,
+    MenuItem,
+    Divider
+} from '@mui/material';
+import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { logout } from '../store/slices';
 import {
@@ -8,7 +24,8 @@ import {
     LayoutDashboard,
     Compass,
     MessageSquare,
-    ClipboardList
+    ClipboardList,
+    Menu as MenuIcon
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -18,94 +35,237 @@ export const Navbar = () => {
     const { items } = useAppSelector((state) => state.cart);
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorEl(null);
+    };
+
     const handleLogout = async () => {
+        handleCloseUserMenu();
         await dispatch(logout());
         navigate('/');
     };
 
     return (
-        <nav className="glass-light sticky top-0 z-50 border-b border-gray-100 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
+        <AppBar
+            position="sticky"
+            elevation={0}
+            sx={{
+                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(20px)',
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                color: 'text.primary'
+            }}
+        >
+            <Container maxWidth="lg">
+                <Toolbar disableGutters sx={{ height: 80 }}>
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 group">
-                        <div className="bg-primary p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <ShoppingBag className="w-6 h-6 text-white" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-tight text-gray-900">
-                            Supp<span className="text-primary">lai</span>
-                        </span>
-                    </Link>
+                    <Box
+                        component={RouterLink}
+                        to="/"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            mr: 4,
+                            '&:hover .logo-icon': { transform: 'rotate(12deg)' }
+                        }}
+                    >
+                        <Box
+                            className="logo-icon"
+                            sx={{
+                                bgcolor: 'primary.main',
+                                p: 1,
+                                borderRadius: 1.5,
+                                display: 'flex',
+                                mr: 1.5,
+                                transition: 'transform 0.3s ease'
+                            }}
+                        >
+                            <ShoppingBag size={24} color="white" />
+                        </Box>
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            sx={{
+                                fontWeight: 900,
+                                letterSpacing: '-0.02em',
+                                display: { xs: 'none', sm: 'block' }
+                            }}
+                        >
+                            Supp<Box component="span" sx={{ color: 'primary.main' }}>lai</Box>
+                        </Typography>
+                    </Box>
 
-                    {/* Navigation Links */}
-                    <div className="hidden md:flex items-center gap-10">
-                        <Link to="/products" className="flex items-center gap-2 text-gray-600 hover:text-primary font-medium transition-all group">
-                            <Compass className="w-5 h-5 group-hover:animate-pulse" />
+                    {/* Desktop Navigation */}
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+                        <Button
+                            component={RouterLink}
+                            to="/products"
+                            startIcon={<Compass size={20} />}
+                            sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                        >
                             Mağaza
-                        </Link>
-                        <Link to="/ai-advisor" className="flex items-center gap-2 text-gray-600 hover:text-primary font-medium transition-all group">
-                            <MessageSquare className="w-5 h-5 group-hover:animate-bounce" />
+                        </Button>
+                        <Button
+                            component={RouterLink}
+                            to="/ai-advisor"
+                            startIcon={<MessageSquare size={20} />}
+                            sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                        >
                             AI Asistan
-                        </Link>
+                        </Button>
                         {user?.role === 'ADMIN' && (
-                            <Link to="/admin" className="flex items-center gap-2 text-gray-600 hover:text-primary font-medium transition-all group">
-                                <LayoutDashboard className="w-5 h-5" />
+                            <Button
+                                component={RouterLink}
+                                to="/admin"
+                                startIcon={<LayoutDashboard size={20} />}
+                                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                            >
                                 Admin
-                            </Link>
+                            </Button>
                         )}
-                    </div>
+                    </Box>
 
-                    {/* Right Side */}
-                    <div className="flex items-center gap-6">
-                        {/* Search (Placeholder) */}
-                        <button className="text-gray-400 hover:text-primary transition-colors">
-                            <Search className="w-5 h-5" />
-                        </button>
+                    {/* Right Side Icons */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+                        <IconButton size="large" sx={{ color: 'text.secondary' }}>
+                            <Search size={22} />
+                        </IconButton>
 
-                        {/* Cart */}
-                        <Link to="/cart" className="relative p-2.5 bg-gray-50 hover:bg-emerald-50 rounded-full transition-all group">
-                            <ShoppingBag className="w-5 h-5 text-gray-600 group-hover:text-primary" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-secondary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Link>
+                        <IconButton
+                            component={RouterLink}
+                            to="/cart"
+                            size="large"
+                            sx={{
+                                color: 'text.secondary',
+                                bgcolor: 'grey.50',
+                                '&:hover': { bgcolor: 'emerald.50', color: 'primary.main' }
+                            }}
+                        >
+                            <Badge badgeContent={cartCount} color="secondary">
+                                <ShoppingBag size={22} />
+                            </Badge>
+                        </IconButton>
 
-                        {/* Auth */}
                         {isAuthenticated ? (
-                            <div className="flex items-center gap-6">
-                                <Link to="/orders" className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-primary transition-colors">
-                                    <ClipboardList className="w-4 h-4" />
-                                    Siparişlerim
-                                </Link>
-                                <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-sm font-bold text-gray-900">{user?.name}</span>
-                                        <span className="text-[10px] text-primary uppercase font-bold tracking-wider">{user?.role}</span>
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-full transition-all duration-300"
-                                        title="Çıkış Yap"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
+                            <Box sx={{ ml: 1 }}>
+                                <Tooltip title="Profil ve Ayarlar">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: 'primary.light',
+                                                color: 'primary.main',
+                                                fontWeight: 800,
+                                                fontSize: '0.875rem'
+                                            }}
+                                        >
+                                            {user?.name?.[0].toUpperCase()}
+                                        </Avatar>
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleCloseUserMenu}
+                                    PaperProps={{
+                                        elevation: 0,
+                                        sx: {
+                                            overflow: 'visible',
+                                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
+                                            mt: 1.5,
+                                            '&:before': {
+                                                content: '""',
+                                                display: 'block',
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 14,
+                                                width: 10,
+                                                height: 10,
+                                                bgcolor: 'background.paper',
+                                                transform: 'translateY(-50%) rotate(45deg)',
+                                                zIndex: 0,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <MenuItem disabled sx={{ opacity: '1 !important' }}>
+                                        <Box sx={{ py: 0.5 }}>
+                                            <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{user?.name}</Typography>
+                                            <Typography variant="caption" color="primary" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>
+                                                {user?.role}
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                    <Divider />
+                                    <MenuItem onClick={() => { handleCloseUserMenu(); navigate('/orders'); }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <ClipboardList size={18} />
+                                            Siparişlerim
+                                        </Box>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                            <LogOut size={18} />
+                                            Çıkış Yap
+                                        </Box>
+                                    </MenuItem>
+                                </Menu>
+                            </Box>
                         ) : (
-                            <div className="flex items-center gap-3">
-                                <Link to="/login" className="px-5 py-2.5 text-sm font-bold text-gray-700 hover:text-primary transition-colors">
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Button
+                                    component={RouterLink}
+                                    to="/login"
+                                    variant="text"
+                                    color="inherit"
+                                    sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+                                >
                                     Giriş
-                                </Link>
-                                <Link to="/register" className="btn-primary text-sm shadow-emerald-100 shadow-xl">
+                                </Button>
+                                <Button
+                                    component={RouterLink}
+                                    to="/register"
+                                    variant="contained"
+                                    color="primary"
+                                    disableElevation
+                                >
                                     Hemen Katıl
-                                </Link>
-                            </div>
+                                </Button>
+                            </Box>
                         )}
-                    </div>
-                </div>
-            </div>
-        </nav>
+
+                        {/* Mobile Toggle */}
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ display: { md: 'none' }, ml: 1 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </Container>
+        </AppBar>
     );
 };

@@ -1,7 +1,31 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Grid,
+    Stack,
+    Button,
+    Paper,
+    Chip,
+    Avatar,
+    CircularProgress,
+    Fade,
+    Link
+} from '@mui/material';
 import { orderService } from '../services';
 import type { Order } from '../types';
+import { Footer } from '../components';
+import {
+    Package,
+    ChevronRight,
+    Clock,
+    CheckCircle2,
+    ClipboardList,
+    ArrowRight,
+    PackageSearch
+} from 'lucide-react';
 
 export const OrdersPage = () => {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -23,62 +47,192 @@ export const OrdersPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="spinner" />
-            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'background.default' }}>
+                <CircularProgress size={60} thickness={4} color="primary" />
+                <Typography variant="overline" sx={{ mt: 3, fontWeight: 900, color: 'text.secondary', letterSpacing: '0.2em' }}>
+                    Siparişleriniz Alınıyor...
+                </Typography>
+            </Box>
         );
     }
 
     return (
-        <div className="pt-8 pb-12">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl font-bold mb-8">Siparişlerim</h1>
+        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
+            <Container maxWidth="md">
+                {/* Header */}
+                <Stack direction="row" spacing={3} alignItems="flex-end" sx={{ mb: 8 }}>
+                    <Box sx={{ p: 2, bgcolor: 'emerald.50', borderRadius: 4, display: 'flex' }}>
+                        <ClipboardList size={32} color="#10b981" />
+                    </Box>
+                    <Box>
+                        <Typography variant="overline" color="primary" sx={{ fontWeight: 900, letterSpacing: '0.2em' }}>
+                            Hesabım
+                        </Typography>
+                        <Typography variant="h2">Siparişlerim</Typography>
+                    </Box>
+                </Stack>
 
                 {orders.length === 0 ? (
-                    <div className="glass-card p-12 text-center">
-                        <div className="text-6xl mb-4">📦</div>
-                        <h2 className="text-xl font-semibold mb-4">Henüz siparişiniz bulunmuyor</h2>
-                        <Link to="/products" className="btn-primary">Alışverişe Başla</Link>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {orders.map((order) => (
-                            <Link
-                                key={order.id}
-                                to={`/orders/${order.id}`}
-                                className="glass-card p-6 flex flex-wrap items-center justify-between gap-4 hover:border-primary/50 transition-colors"
+                    <Fade in timeout={800}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                textAlign: 'center',
+                                py: 12,
+                                px: 4,
+                                borderRadius: 10,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.03)',
+                                bgcolor: 'white'
+                            }}
+                        >
+                            <Avatar
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    bgcolor: 'grey.50',
+                                    mx: 'auto',
+                                    mb: 4,
+                                    borderRadius: 8
+                                }}
                             >
-                                <div className="space-y-1">
-                                    <p className="text-sm text-gray-400">Sipariş No</p>
-                                    <p className="font-mono font-bold">#{order.id.slice(0, 8)}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-gray-400">Tarih</p>
-                                    <p className="font-semibold">{new Date(order.createdAt).toLocaleDateString('tr-TR')}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-gray-400">Toplam</p>
-                                    <p className="font-bold text-primary">₺{order.total.toFixed(2)}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-gray-400">Durum</p>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'PAID' ? 'bg-green-500/20 text-green-400' :
-                                            order.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                'bg-gray-500/20 text-gray-400'
-                                        }`}>
-                                        {order.status === 'PAID' ? 'Ödendi' :
-                                            order.status === 'PENDING' ? 'Bekliyor' :
-                                                order.status}
-                                    </span>
-                                </div>
-                                <div className="text-primary">
-                                    Detaylar →
-                                </div>
-                            </Link>
+                                <PackageSearch size={48} color="#cbd5e1" />
+                            </Avatar>
+                            <Typography variant="h3" sx={{ mb: 2 }}>Henüz bir siparişiniz yok</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ mb: 6, maxWidth: 500, mx: 'auto', fontSize: '1.1rem' }}>
+                                Supplai dünyasındaki eşsiz ürünleri keşfetmeye ve ilk siparişinizi oluşturmaya ne dersiniz?
+                            </Typography>
+                            <Button
+                                component={RouterLink}
+                                to="/products"
+                                variant="contained"
+                                size="large"
+                                endIcon={<ArrowRight size={20} />}
+                                sx={{
+                                    borderRadius: 4,
+                                    px: 6,
+                                    py: 2,
+                                    fontWeight: 900,
+                                    boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                                }}
+                            >
+                                Alışverişe Başla
+                            </Button>
+                        </Paper>
+                    </Fade>
+                ) : (
+                    <Stack spacing={3}>
+                        {orders.map((order, index) => (
+                            <Fade in key={order.id} timeout={400 + (index * 100)}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/orders/${order.id}`}
+                                    sx={{ textDecoration: 'none' }}
+                                >
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 4,
+                                            borderRadius: 8,
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            transition: 'all 0.3s ease',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            '&:hover': {
+                                                boxShadow: '0 20px 40px rgba(0,0,0,0.04)',
+                                                borderColor: 'primary.light',
+                                                '& .detail-button': { transform: 'translateX(8px)' }
+                                            },
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 0,
+                                                height: '100%',
+                                                width: 6,
+                                                bgcolor: 'primary.main',
+                                                opacity: 0,
+                                                transition: 'opacity 0.3s'
+                                            },
+                                            '&:hover::before': { opacity: 0.1 }
+                                        }}
+                                    >
+                                        <Grid container spacing={4} alignItems="center">
+                                            <Grid size={{ xs: 12, sm: 'auto' }}>
+                                                <Stack direction="row" spacing={3} alignItems="center">
+                                                    <Avatar sx={{ width: 64, height: 64, bgcolor: 'grey.50', borderRadius: 4 }}>
+                                                        <Package size={32} color="#cbd5e1" />
+                                                    </Avatar>
+                                                    <Box>
+                                                        <Typography variant="overline" color="text.disabled" sx={{ fontWeight: 900 }}>SİPARİŞ NO</Typography>
+                                                        <Typography variant="h6" sx={{ fontFamily: 'monospace', fontWeight: 800 }}>
+                                                            #{order.id.slice(0, 8).toUpperCase()}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 'grow' }}>
+                                                <Grid container spacing={4}>
+                                                    <Grid size={{ xs: 6, md: 4 }}>
+                                                        <Typography variant="overline" color="text.disabled" sx={{ fontWeight: 900 }}>TARİH</Typography>
+                                                        <Typography sx={{ fontWeight: 700 }}>
+                                                            {new Date(order.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid size={{ xs: 6, md: 4 }}>
+                                                        <Typography variant="overline" color="text.disabled" sx={{ fontWeight: 900 }}>TOPLAM</Typography>
+                                                        <Typography color="primary" sx={{ fontWeight: 900, fontSize: '1.1rem' }}>
+                                                            ₺{order.total.toLocaleString('tr-TR')}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid size={{ xs: 12, md: 4 }}>
+                                                        <Typography variant="overline" color="text.disabled" sx={{ fontWeight: 900 }}>DURUM</Typography>
+                                                        <Box>
+                                                            {order.status === 'PAID' ? (
+                                                                <Chip
+                                                                    icon={<CheckCircle2 size={14} />}
+                                                                    label="ÖDENDİ"
+                                                                    size="small"
+                                                                    color="success"
+                                                                    sx={{ fontWeight: 900, letterSpacing: '0.1em' }}
+                                                                />
+                                                            ) : (
+                                                                <Chip
+                                                                    icon={<Clock size={14} />}
+                                                                    label={order.status === 'PENDING' ? 'BEKLEMEDE' : order.status}
+                                                                    size="small"
+                                                                    sx={{ fontWeight: 900, letterSpacing: '0.1em', bgcolor: 'grey.100', color: 'grey.600' }}
+                                                                />
+                                                            )}
+                                                        </Box>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, sm: 'auto' }}>
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={1}
+                                                    alignItems="center"
+                                                    className="detail-button"
+                                                    sx={{ transition: 'transform 0.3s ease', color: 'primary.main' }}
+                                                >
+                                                    <Typography variant="caption" sx={{ fontWeight: 900, letterSpacing: '0.1em' }}>DETAYLAR</Typography>
+                                                    <ChevronRight size={18} />
+                                                </Stack>
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                </Link>
+                            </Fade>
                         ))}
-                    </div>
+                    </Stack>
                 )}
-            </div>
-        </div>
+            </Container>
+            <Footer />
+        </Box>
     );
 };
