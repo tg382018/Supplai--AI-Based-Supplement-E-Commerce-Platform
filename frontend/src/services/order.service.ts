@@ -26,4 +26,19 @@ export const orderService = {
         const response = await api.post<{ url: string; sessionId: string }>(`/payments/checkout/${orderId}`);
         return response.data;
     },
+
+    async getAdminOrders(): Promise<Order[]> {
+        const response = await api.get<Order[]>('/orders/admin');
+        return response.data;
+    },
+
+    async updateOrderStatus(id: string, status: string): Promise<Order> {
+        const response = await api.patch<Order>(`/orders/${id}/status`, { status });
+        return response.data;
+    },
+
+    async getAdminStats(): Promise<any> {
+        const response = await api.get('/orders/stats');
+        return response.data;
+    },
 };

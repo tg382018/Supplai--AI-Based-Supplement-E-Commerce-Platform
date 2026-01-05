@@ -19,6 +19,7 @@ import {
   CartPage,
   OrderDetailsPage,
   OrdersPage,
+  AdminOrders,
   AiAdvisorPage,
 } from './pages';
 
@@ -54,7 +55,7 @@ const AppContent = () => {
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="categories" element={<AdminCategories />} />
-              <Route path="orders" element={<div>Admin Siparişler (Yakında)</div>} />
+              <Route path="orders" element={<AdminOrders />} />
             </Route>
           </Routes>
         </main>

@@ -41,25 +41,47 @@ export class AiService {
             orderBy: { createdAt: 'desc' },
         });
 
-        const messages = conversation ? (conversation.messages as any[]) : [];
+        const history = conversation ? (conversation.messages as any[]) : [];
+        const userMessage = dto.message;
 
-        // Add user message
-        messages.push({
+        // Check if this is the very first real user message (excluding initial assistant greeting if handled on FE)
+        // or if we should check relevance first
+
+        const relevanceCheck = this.isMessageRelevant(userMessage);
+
+        let aiMessage = '';
+        let products: any[] = [];
+
+        if (history.length === 0) {
+            // First message from user
+            if (!relevanceCheck) {
+                aiMessage = "Merhaba! Supplai AI asistanınız olarak size en doğru supplementleri önerebilmem için yaşınız, boyunuz, kilonuz ve sağlık hedefleriniz (kilo verme, kas kazanımı, enerji vb.) hakkında bilgi vermeniz gerekiyor. Lütfen bu bilgileri paylaşabilir misiniz?";
+            } else {
+                // Relevant info provided in first message
+                const tags = this.extractTagsFromMessage(userMessage);
+                products = await this.productsService.findByTags(tags, 4);
+                aiMessage = await this.generateChatResponse(userMessage, history, products);
+            }
+        } else {
+            // Continuation of chat
+            if (!relevanceCheck && history.length < 5) { // Only repeat/nag early in the conversation
+                aiMessage = "Anlıyorum, ancak size yardımcı olabilmem için hedefleriniz, fiziksel bilgileriniz (boy, kilo, yaş) veya şikayetleriniz (yorgunluk, uykusuzluk vb.) hakkında daha spesifik detaylara ihtiyacım var. Size nasıl yardımcı olabilirim?";
+            } else {
+                const tags = this.extractTagsFromMessage(userMessage);
+                products = await this.productsService.findByTags(tags, 4);
+                aiMessage = await this.generateChatResponse(userMessage, history, products);
+            }
+        }
+
+        // Add user message to history
+        history.push({
             role: 'user',
-            content: dto.message,
+            content: userMessage,
             timestamp: new Date().toISOString(),
         });
 
-        // Analyze message and find relevant products
-        const tags = this.extractTagsFromMessage(dto.message);
-        const products = tags.length > 0
-            ? await this.productsService.findByTags(tags, 4)
-            : [];
-
-        // Generate AI response
-        const aiMessage = await this.generateChatResponse(dto.message, messages, products);
-
-        messages.push({
+        // Add assistant message to history
+        history.push({
             role: 'assistant',
             content: aiMessage,
             timestamp: new Date().toISOString(),
@@ -69,13 +91,13 @@ export class AiService {
         if (conversation) {
             await this.prisma.aiConversation.update({
                 where: { id: conversation.id },
-                data: { messages },
+                data: { messages: history },
             });
         } else {
             await this.prisma.aiConversation.create({
                 data: {
                     sessionId,
-                    messages,
+                    messages: history,
                 },
             });
         }
@@ -85,6 +107,22 @@ export class AiService {
             message: aiMessage,
             recommendations: products,
         };
+    }
+
+    private isMessageRelevant(message: string): boolean {
+        const lower = message.toLowerCase();
+        const healthKeywords = [
+            'kilo', 'boy', 'yaş', 'hedef', 'zayıfla', 'kas', 'enerji', 'uyku', 'stres',
+            'vitamin', 'protein', 'eklem', 'cilt', 'sağlık', 'diyet', 'antrenman',
+            'spor', 'yorgun', 'halsiz', 'bağışıklık', 'şişkinlik', 'sindirim',
+            'focus', 'odaklanma', 'hafıza', 'omega', 'magnezyum'
+        ];
+
+        // Also check for numbers (likely weight/height/age)
+        const hasNumbers = /\d+/.test(message);
+        const hasKeywords = healthKeywords.some(k => lower.includes(k));
+
+        return hasKeywords || (hasNumbers && lower.length > 5);
     }
 
     private extractTagsFromInput(dto: AiRecommendationDto): string[] {

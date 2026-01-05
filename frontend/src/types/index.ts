@@ -59,6 +59,10 @@ export interface Order {
     status: 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
     stripeSessionId?: string;
     shippingAddress?: string;
+    user?: {
+        name: string;
+        email: string;
+    };
     createdAt: string;
 }
 

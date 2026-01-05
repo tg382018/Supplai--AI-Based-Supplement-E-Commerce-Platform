@@ -12,7 +12,7 @@ export const AiChat = () => {
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'assistant',
-            content: 'Merhaba! 👋 Ben Supplai AI asistanınız. Size en uygun supplement önerilerini sunmak için buradayım.\n\nSağlık hedefleriniz veya ihtiyaçlarınız hakkında bana bilgi verebilir misiniz? Örneğin:\n- Yaşınız ve kilonuz\n- Sağlık hedefleriniz (zayıflama, enerji, uyku vb.)\n- Varsa sağlık durumlarınız',
+            content: 'Merhaba! 👋 Ben Supplai AI asistanınız. Size en uygun supplement önerilerini sunabilmem için yaşınız, boyunuz, kilonuz ve sağlık hedefleriniz (kilo verme, kas kazanımı, enerji vb.) hakkında bilgi verebilir misiniz?',
         },
     ]);
     const [input, setInput] = useState('');
@@ -66,8 +66,8 @@ export const AiChat = () => {
                         >
                             <div
                                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                                        ? 'bg-[var(--primary)] text-white'
-                                        : 'bg-[var(--surface)] text-[var(--text)]'
+                                    ? 'bg-[var(--primary)] text-white'
+                                    : 'bg-[var(--surface)] text-[var(--text)]'
                                     }`}
                             >
                                 <div className="whitespace-pre-wrap text-sm">{message.content}</div>

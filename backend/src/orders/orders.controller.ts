@@ -40,6 +40,14 @@ export class OrdersController {
         return this.ordersService.findAllAdmin();
     }
 
+    @Get('stats')
+    @UseGuards(RolesGuard)
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: 'Get dashboard statistics (Admin only)' })
+    getStats() {
+        return this.ordersService.getDashboardStats();
+    }
+
     @Get(':id')
     @ApiOperation({ summary: 'Get order by ID' })
     findOne(@Param('id') id: string, @GetUser('userId') userId: string) {

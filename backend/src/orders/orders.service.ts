@@ -158,4 +158,71 @@ export class OrdersService {
             },
         });
     }
+
+    async getDashboardStats() {
+        const [
+            totalRevenue,
+            activeOrdersCount,
+            totalCustomers,
+            recentOrders,
+            bestSellersRaw,
+        ] = await Promise.all([
+            // Total revenue from paid orders
+            this.prisma.order.aggregate({
+                where: { status: OrderStatus.PAID },
+                _sum: { total: true },
+            }),
+            // Count of non-delivered and non-cancelled orders
+            this.prisma.order.count({
+                where: {
+                    status: {
+                        in: [OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED],
+                    },
+                },
+            }),
+            // Distinct customers who placed orders (or just total users for simplicity if desired, but let's do users with orders)
+            this.prisma.user.count({
+                where: { role: 'USER' },
+            }),
+            // Last 5 orders
+            this.prisma.order.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    user: { select: { name: true, email: true } },
+                },
+            }),
+            // Best sellers based on OrderItem quantities
+            this.prisma.orderItem.groupBy({
+                by: ['productId'],
+                _sum: { quantity: true },
+                orderBy: {
+                    _sum: { quantity: 'desc' },
+                },
+                take: 5,
+            }),
+        ]);
+
+        // Fetch product details for best sellers
+        const bestSellers = await Promise.all(
+            bestSellersRaw.map(async (item) => {
+                const product = await this.prisma.product.findUnique({
+                    where: { id: item.productId },
+                    select: { id: true, name: true, price: true, imageUrl: true },
+                });
+                return {
+                    ...product,
+                    salesCount: item._sum.quantity,
+                };
+            }),
+        );
+
+        return {
+            totalRevenue: totalRevenue._sum.total || 0,
+            activeOrdersCount,
+            totalCustomers,
+            recentOrders,
+            bestSellers,
+        };
+    }
 }
