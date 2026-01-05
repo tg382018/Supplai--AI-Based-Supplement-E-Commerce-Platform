@@ -23,6 +23,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   addresses     Address[]
+  tickets       SupportTicket[]
 }
 
 model Address {
@@ -111,4 +112,34 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+enum TicketStatus {
+  OPEN
+  CLOSED
+}
+
+enum MessageSender {
+  USER
+  ADMIN
+}
+
+model SupportTicket {
+  id        String       @id @default(uuid())
+  subject   String
+  status    TicketStatus @default(OPEN)
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String
+  messages  TicketMessage[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model TicketMessage {
+  id        String        @id @default(uuid())
+  content   String
+  sender    MessageSender
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId  String
+  createdAt DateTime      @default(now())
 }

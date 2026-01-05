@@ -24,6 +24,7 @@ import {
   OrdersPage,
   AdminOrders,
   AiAdvisorPage,
+  SupportPage,
 } from './pages';
 
 const AppContent = () => {
@@ -54,6 +55,7 @@ const AppContent = () => {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/:id" element={<OrderDetailsPage />} />
             <Route path="/ai-advisor" element={<AiAdvisorPage />} />
+            <Route path="/support" element={<SupportPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>

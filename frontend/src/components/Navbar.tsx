@@ -28,7 +28,8 @@ import {
     Compass,
     MessageSquare,
     ClipboardList,
-    Menu as MenuIcon
+    Menu as MenuIcon,
+    Headset as HeadsetIcon
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -131,6 +132,16 @@ export const Navbar = () => {
                         >
                             AI Asistan
                         </Button>
+                        {isAuthenticated && (
+                            <Button
+                                component={RouterLink}
+                                to="/support"
+                                startIcon={<HeadsetIcon size={20} />}
+                                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                            >
+                                Destek
+                            </Button>
+                        )}
                         {user?.role === 'ADMIN' && (
                             <Button
                                 component={RouterLink}

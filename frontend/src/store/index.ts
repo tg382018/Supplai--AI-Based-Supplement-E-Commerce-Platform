@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { authReducer, cartReducer, productsReducer, addressReducer } from './slices';
+import { authReducer, cartReducer, productsReducer, addressReducer, supportReducer } from './slices';
 
 export const store = configureStore({
     reducer: {
@@ -7,6 +7,7 @@ export const store = configureStore({
         cart: cartReducer,
         products: productsReducer,
         addresses: addressReducer,
+        support: supportReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

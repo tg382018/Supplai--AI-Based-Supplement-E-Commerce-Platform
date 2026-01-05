@@ -8,4 +8,5 @@ export * from './CartPage';
 export * from './OrderDetailsPage';
 export * from './OrdersPage';
 export * from './AiAdvisorPage';
+export * from './SupportPage';
 export * from './admin/AdminOrders';

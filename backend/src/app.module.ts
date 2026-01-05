@@ -11,6 +11,7 @@ import { AiModule } from './ai';
 import { PaymentsModule } from './payments';
 import { StorageModule } from './storage';
 import { AddressesModule } from './addresses/addresses.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AddressesModule } from './addresses/addresses.module';
     PaymentsModule,
     StorageModule,
     AddressesModule,
+    SupportModule,
   ],
 })
 export class AppModule { }
