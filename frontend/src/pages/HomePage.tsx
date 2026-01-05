@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
@@ -9,32 +9,70 @@ import {
     Stack,
     Chip,
     Paper,
-    Avatar
+    Avatar,
+    TextField,
+    InputAdornment,
+    Pagination,
+    CircularProgress
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { fetchFeatured, fetchCategories } from '../store/slices';
+import { fetchProducts, fetchCategories, setSearch, setCategory, setPage } from '../store/slices';
 import {
     ProductCard,
     Footer
 } from '../components';
 import {
+    CheckCircle2,
+    Search as SearchIcon,
+    Filter,
+    LayoutGrid,
+    RefreshCw,
+    Sparkles,
     Zap,
     ShieldCheck,
     Truck,
-    ArrowRight,
-    Sparkles,
-    ShoppingBag,
-    CheckCircle2
+    ShoppingBag
 } from 'lucide-react';
 
 export const HomePage = () => {
     const dispatch = useAppDispatch();
-    const { featured, categories } = useAppSelector((state) => state.products);
+    const { products, categories, loading, search, selectedCategory, currentPage, totalPages } = useAppSelector(
+        (state) => state.products
+    );
+    const [searchInput, setSearchInput] = useState(search || '');
 
     useEffect(() => {
-        dispatch(fetchFeatured());
         dispatch(fetchCategories());
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(
+            fetchProducts({
+                search,
+                categoryId: selectedCategory || undefined,
+                page: currentPage,
+            })
+        );
+    }, [dispatch, search, selectedCategory, currentPage]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        dispatch(setSearch(searchInput));
+    };
+
+    const handleCategoryChange = (categoryId: string | null) => {
+        dispatch(setCategory(categoryId));
+        // We don't use searchParams on Home unless we want to, 
+        // but for now let's keep it clean or just dispatch.
+    };
+
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+        dispatch(setPage(value));
+        const productsElement = document.getElementById('all-products-section');
+        if (productsElement) {
+            productsElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
         <Box sx={{ bgcolor: 'background.default' }}>
@@ -195,257 +233,217 @@ export const HomePage = () => {
                                     </Box>
                                 </Paper>
 
-                                <Paper sx={{
-                                    position: 'absolute',
-                                    top: -40,
-                                    right: -40,
-                                    p: 3,
-                                    borderRadius: 6,
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                                    textAlign: 'center'
-                                }}>
-                                    <Typography variant="h4" color="primary" sx={{ fontWeight: 900 }}>4.9</Typography>
-                                    <Stack direction="row" spacing={0.5} sx={{ color: 'warning.main', my: 0.5 }}>
-                                        {[...Array(5)].map((_, i) => <Sparkles key={i} size={14} fill="currentColor" />)}
-                                    </Stack>
-                                    <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.1em' }}>KULLANICI PUANI</Typography>
-                                </Paper>
                             </Box>
                         </Grid>
                     </Grid>
                 </Container>
             </Box>
 
-            {/* Features Section */}
-            <Box component="section" sx={{ py: { xs: 12, md: 20 }, bgcolor: 'background.default' }}>
+
+
+
+
+            {/* All Products Section (Replaces Featured) */}
+            <Box id="all-products-section" component="section" sx={{ py: { xs: 12, md: 16 }, bgcolor: 'background.default' }}>
                 <Container maxWidth="lg">
-                    <Box sx={{ textAlign: 'center', mb: 10 }}>
-                        <Typography variant="h2" sx={{ mb: 3 }}>Neden Supplai'ı Seçmelisiniz?</Typography>
-                        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-                            Supplement dünyasında kaybolmayın. Bilim ve yapay zeka ile size en doğru yolu gösteriyoruz.
-                        </Typography>
-                    </Box>
-
-                    <Grid container spacing={4}>
-                        {[
-                            {
-                                icon: <Zap size={40} />,
-                                title: 'AI Destekli Analiz',
-                                desc: 'Gelişmiş algoritmalarımız vücut tipiniz ve hedeflerinize göre en verimli kombinasyonları oluşturur.',
-                                color: 'primary.light',
-                                bgcolor: 'emerald.50'
-                            },
-                            {
-                                icon: <ShieldCheck size={40} />,
-                                title: 'Üstün Kalite',
-                                desc: 'Dünyanın en güvenilir markaları ve laboratuvar onaylı içerikler ile sağlığınızı koruyoruz.',
-                                color: 'primary.main',
-                                bgcolor: 'blue.50'
-                            },
-                            {
-                                icon: <Truck size={40} />,
-                                title: 'Ekspres Teslimat',
-                                desc: 'Eksik takviyeleriniz için beklemenize gerek yok. Aynı gün kargo ve hızlı teslimat avantajı.',
-                                color: 'secondary.main',
-                                bgcolor: 'orange.50'
-                            },
-                        ].map((feature, index) => (
-                            <Grid size={{ xs: 12, md: 4 }} key={index}>
-                                <Paper sx={{ p: 6, height: '100%', '&:hover img': { transform: 'scale(1.1)' } }}>
-                                    <Box sx={{
-                                        width: 80,
-                                        height: 80,
-                                        borderRadius: 4,
-                                        bgcolor: feature.bgcolor,
-                                        color: feature.color,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        mb: 4
-                                    }}>
-                                        {feature.icon}
-                                    </Box>
-                                    <Typography variant="h5" sx={{ mb: 2 }}>{feature.title}</Typography>
-                                    <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                                        {feature.desc}
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Container>
-            </Box>
-
-            {/* Categories Section */}
-            {categories.length > 0 && (
-                <Box component="section" sx={{ py: { xs: 12, md: 20 }, bgcolor: 'white' }}>
-                    <Container maxWidth="lg">
-                        <Stack direction={{ xs: 'column', md: 'row' }} alignItems={{ md: 'flex-end' }} justifyContent="space-between" spacing={4} sx={{ mb: 8 }}>
-                            <Box sx={{ maxWidth: 600 }}>
-                                <Typography variant="h2" sx={{ mb: 2 }}>Kategorilere Göre Keşfedin</Typography>
-                                <Typography variant="h6" color="text.secondary">
-                                    Sağlık yolculuğunuzda ihtiyacınız olan her şey kategorilere ayrılmış şekilde burada.
+                    {/* Header & Search */}
+                    <Stack
+                        direction={{ xs: 'column', md: 'row' }}
+                        alignItems={{ md: 'flex-end' }}
+                        justifyContent="space-between"
+                        spacing={4}
+                        sx={{ mb: 8 }}
+                    >
+                        <Box sx={{ maxWidth: 600 }}>
+                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                <Box sx={{ p: 1, bgcolor: 'emerald.50', borderRadius: 2, display: 'flex' }}>
+                                    <ShoppingBag size={24} color="#10b981" />
+                                </Box>
+                                <Typography variant="overline" color="primary" sx={{ fontWeight: 900, letterSpacing: '0.2em' }}>
+                                    KEŞFEDİN
                                 </Typography>
-                            </Box>
-                            <Button
-                                component={RouterLink}
-                                to="/products"
-                                color="primary"
-                                endIcon={<ArrowRight />}
-                                sx={{ fontWeight: 800, fontSize: '1.1rem' }}
+                            </Stack>
+                            <Typography variant="h2" sx={{ mb: 2 }}>Tüm Ürünlerimiz</Typography>
+                            <Typography variant="h6" color="text.secondary">
+                                İhtiyacınız olan en kaliteli supplementleri filtreleyerek hemen bulun.
+                            </Typography>
+                        </Box>
+
+                        <Box component="form" onSubmit={handleSearch} sx={{ width: { xs: '100%', md: 400 } }}>
+                            <TextField
+                                fullWidth
+                                placeholder="Ürün ara..."
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                variant="outlined"
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon size={20} color="#94a3b8" />
+                                        </InputAdornment>
+                                    ),
+                                    sx: {
+                                        borderRadius: 4,
+                                        bgcolor: 'white',
+                                        '& fieldset': { borderColor: 'grey.100' },
+                                        '&:hover fieldset': { borderColor: 'primary.light' },
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                    }
+                                }}
+                            />
+                        </Box>
+                    </Stack>
+
+                    {/* Filters */}
+                    <Stack
+                        direction={{ xs: 'column', lg: 'row' }}
+                        alignItems={{ lg: 'center' }}
+                        justifyContent="space-between"
+                        spacing={4}
+                        sx={{ mb: 6 }}
+                    >
+                        <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+                            <Paper
+                                sx={{
+                                    px: 2,
+                                    py: 1,
+                                    bgcolor: 'white',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2.5,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1
+                                }}
                             >
-                                Tümünü İncele
+                                <Filter size={16} color="#94a3b8" />
+                                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.1em' }}>
+                                    FİLTRELE:
+                                </Typography>
+                            </Paper>
+
+                            <Button
+                                variant={!selectedCategory ? 'contained' : 'outlined'}
+                                onClick={() => handleCategoryChange(null)}
+                                sx={{
+                                    borderRadius: 2.5,
+                                    px: 3,
+                                    fontWeight: 800,
+                                    boxShadow: !selectedCategory ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
+                                }}
+                            >
+                                Tümü
                             </Button>
+                            {categories.map((category) => (
+                                <Button
+                                    key={category.id}
+                                    variant={selectedCategory === category.id ? 'contained' : 'outlined'}
+                                    onClick={() => handleCategoryChange(category.id)}
+                                    sx={{
+                                        borderRadius: 2.5,
+                                        px: 3,
+                                        fontWeight: 800,
+                                        boxShadow: selectedCategory === category.id ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
+                                    }}
+                                >
+                                    {category.name}
+                                </Button>
+                            ))}
                         </Stack>
 
-                        <Grid container spacing={4}>
-                            {categories.map((category) => (
-                                <Grid size={{ xs: 6, md: 3 }} key={category.id}>
-                                    <Paper
-                                        component={RouterLink}
-                                        to={`/products?category=${category.id}`}
-                                        sx={{
-                                            display: 'block',
-                                            position: 'relative',
-                                            height: 300,
-                                            borderRadius: 6,
-                                            overflow: 'hidden',
-                                            textDecoration: 'none',
-                                            '&:hover img': { transform: 'scale(1.1)' }
-                                        }}
-                                    >
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            inset: 0,
-                                            bgcolor: 'black',
-                                            opacity: 0.4,
-                                            zIndex: 1,
-                                            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)'
-                                        }} />
-                                        <Box
-                                            component="img"
-                                            src={category.imageUrl || ''}
-                                            sx={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover',
-                                                transition: 'transform 0.7s ease'
-                                            }}
-                                        />
-                                        {!category.imageUrl && (
-                                            <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justify: 'center' }}>
-                                                <ShoppingBag size={48} color="white" opacity={0.2} />
-                                            </Box>
-                                        )}
-                                        <Box sx={{ position: 'absolute', bottom: 24, left: 24, zIndex: 2 }}>
-                                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 800 }}>{category.name}</Typography>
-                                            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: 700 }}>
-                                                {category._count?.products || 0} Ürün Listeleniyor
-                                            </Typography>
-                                        </Box>
-                                    </Paper>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Container>
-                </Box>
-            )}
-
-            {/* Featured Section */}
-            {featured.length > 0 && (
-                <Box component="section" sx={{ py: { xs: 12, md: 20 }, bgcolor: 'background.default' }}>
-                    <Container maxWidth="lg">
-                        <Box sx={{ textAlign: 'center', mb: 10 }}>
-                            <Typography
-                                variant="caption"
-                                color="primary"
-                                sx={{
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.2em',
-                                    display: 'block',
-                                    mb: 1
-                                }}
-                            >
-                                Popüler Seçimler
-                            </Typography>
-                            <Typography variant="h2">Öne Çıkan Supplementler</Typography>
-                        </Box>
-
-                        <Grid container spacing={4}>
-                            {featured.slice(0, 8).map((product) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={product.id}>
-                                    <ProductCard product={product} />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Container>
-                </Box>
-            )}
-
-            {/* CTA Section */}
-            <Box component="section" sx={{ py: 12 }}>
-                <Container maxWidth="lg">
-                    <Paper sx={{
-                        position: 'relative',
-                        borderRadius: 10,
-                        overflow: 'hidden',
-                        bgcolor: 'grey.900',
-                        py: 12,
-                        px: { xs: 4, md: 10 },
-                        textAlign: 'center'
-                    }}>
-                        <Box sx={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            width: '50%',
-                            height: '100%',
-                            bgcolor: 'primary.main',
-                            opacity: 0.1,
-                            filter: 'blur(120px)',
-                            transform: 'rotate(-12deg) translateX(50%)',
-                            pointerEvents: 'none'
-                        }} />
-
-                        <Box sx={{ position: 'relative', zIndex: 1, maxWidth: 800, mx: 'auto' }}>
-                            <Paper sx={{
+                        <Paper
+                            sx={{
                                 display: 'inline-flex',
-                                p: 2,
-                                borderRadius: 4,
-                                bgcolor: 'rgba(255,255,255,0.05)',
-                                backdropFilter: 'blur(10px)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                mb: 4
-                            }}>
-                                <Zap size={40} color="#10b981" />
-                            </Paper>
-                            <Typography variant="h2" sx={{ color: 'white', mb: 3 }}>
-                                Size En Uygun Takviyeyi <br />
-                                <Box component="span" sx={{ color: 'primary.main' }}>Birlikte Bulalım</Box>
+                                alignItems: 'center',
+                                gap: 1.5,
+                                px: 2.5,
+                                py: 1,
+                                borderRadius: 3,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                bgcolor: 'white'
+                            }}
+                        >
+                            <LayoutGrid size={16} color="#94a3b8" />
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                                {products.length} Ürün
                             </Typography>
-                            <Typography variant="h6" sx={{ color: 'grey.400', mb: 6, lineHeight: 1.6 }}>
-                                AI asistanımıza boy, kilo and hedeflerinizi anlatın, size saniyeler içinde bilimsel temelli öneriler sunsun. Kullanmaya başlamak tamamen ücretsizdir.
-                            </Typography>
-                            <Button
-                                component={RouterLink}
-                                to="/ai-advisor"
-                                variant="contained"
-                                size="large"
-                                sx={{
-                                    px: 6,
-                                    py: 2.5,
-                                    fontSize: '1.2rem',
-                                    borderRadius: 4,
-                                    boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
-                                }}
-                            >
-                                🤖 Hemen AI Asistanı Başlat
-                            </Button>
+                        </Paper>
+                    </Stack>
+
+                    {/* Content */}
+                    {loading ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 15 }}>
+                            <CircularProgress size={50} thickness={4} color="primary" />
                         </Box>
-                    </Paper>
+                    ) : products.length === 0 ? (
+                        <Paper
+                            variant="outlined"
+                            sx={{
+                                textAlign: 'center',
+                                py: 10,
+                                borderRadius: 8,
+                                borderStyle: 'dashed',
+                                borderWidth: 3,
+                                bgcolor: 'white'
+                            }}
+                        >
+                            <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.50', mx: 'auto', mb: 2, color: 'grey.300' }}>
+                                <SearchIcon size={30} />
+                            </Avatar>
+                            <Typography variant="h5" sx={{ mb: 1 }}>Ürün Bulunamadı</Typography>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                startIcon={<RefreshCw size={16} />}
+                                onClick={() => {
+                                    setSearchInput('');
+                                    dispatch(setSearch(''));
+                                    dispatch(setCategory(null));
+                                }}
+                                sx={{ borderRadius: 3, mt: 2, fontWeight: 800 }}
+                            >
+                                Sıfırla
+                            </Button>
+                        </Paper>
+                    ) : (
+                        <Box>
+                            <Grid container spacing={3}>
+                                {products.map((product) => (
+                                    <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={product.id}>
+                                        <ProductCard product={product} />
+                                    </Grid>
+                                ))}
+                            </Grid>
+
+                            {totalPages > 1 && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+                                    <Pagination
+                                        count={totalPages}
+                                        page={currentPage}
+                                        onChange={handlePageChange}
+                                        color="primary"
+                                        size="large"
+                                        sx={{
+                                            '& .MuiPaginationItem-root': {
+                                                borderRadius: 3,
+                                                fontWeight: 900,
+                                                height: 48,
+                                                minWidth: 48,
+                                                bgcolor: 'white',
+                                                border: '1px solid',
+                                                borderColor: 'divider'
+                                            }
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                        </Box>
+                    )}
                 </Container>
             </Box>
+
+
 
             {/* Footer */}
             <Footer />

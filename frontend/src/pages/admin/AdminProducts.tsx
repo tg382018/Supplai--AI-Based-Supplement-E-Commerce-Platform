@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { fetchProducts, deleteProduct } from '../../store/slices/productsSlice';
 import ProductModal from '../../components/admin/ProductModal';
 import type { Product } from '../../types';
-import { Plus, Pencil, Trash2, Package, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package } from 'lucide-react';
 
 const AdminProducts: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -68,7 +68,7 @@ const AdminProducts: React.FC = () => {
                     sx={{
                         px: 4,
                         py: 1.5,
-                        borderRadius: 3,
+                        borderRadius: 0,
                         boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)',
                         fontWeight: 800
                     }}
@@ -82,7 +82,7 @@ const AdminProducts: React.FC = () => {
                     component={Paper}
                     elevation={0}
                     sx={{
-                        borderRadius: 8,
+                        borderRadius: 0,
                         border: '1px solid',
                         borderColor: 'divider',
                         overflow: 'hidden',

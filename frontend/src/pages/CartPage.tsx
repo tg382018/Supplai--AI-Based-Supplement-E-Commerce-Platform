@@ -13,7 +13,8 @@ import {
     Link,
     Alert,
     CircularProgress,
-    Fade
+    Fade,
+    Chip
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { removeFromCart, updateQuantity, clearCart } from '../store/slices';

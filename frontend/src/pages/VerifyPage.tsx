@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -9,7 +9,6 @@ import {
     TextField,
     Button,
     Paper,
-    Link,
     Alert,
     CircularProgress,
     Fade,
@@ -17,7 +16,7 @@ import {
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
 import { verify, clearError } from '../store/slices/authSlice';
-import { Mail, ShieldCheck, ArrowRight } from 'lucide-react';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 
 interface VerifyFormData {
     code: string;

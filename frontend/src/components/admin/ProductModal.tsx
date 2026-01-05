@@ -13,16 +13,14 @@ import {
     Typography,
     MenuItem,
     Grid,
-    Avatar,
     CircularProgress,
-    InputAdornment,
-    Divider
+    InputAdornment
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { addProduct, updateProduct, fetchCategories } from '../../store/slices/productsSlice';
 import { storageService } from '../../services';
 import type { Product } from '../../types';
-import { X, Upload, Tag, Package, Box as BoxIcon, Info, FlaskConical, History } from 'lucide-react';
+import { X, Upload, Tag, History } from 'lucide-react';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -120,7 +118,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
             fullWidth
             PaperProps={{
                 sx: {
-                    borderRadius: 8,
+                    borderRadius: 0,
                     boxShadow: '0 40px 80px rgba(0,0,0,0.1)',
                     backgroundImage: 'none'
                 }
@@ -147,7 +145,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                     {...register('name', { required: 'Ad gerekli' })}
                                     error={!!errors.name}
                                     helperText={errors.name?.message}
-                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                    slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                 />
 
                                 <TextField
@@ -157,7 +155,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                     {...register('categoryId', { required: 'Kategori seçin' })}
                                     error={!!errors.categoryId}
                                     helperText={errors.categoryId?.message}
-                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                    slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                 >
                                     <MenuItem value="">Seçiniz</MenuItem>
                                     {categories.map((c) => (
@@ -172,7 +170,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                             type="number"
                                             label="Fiyat (₺)"
                                             {...register('price', { required: 'Fiyat gerekli' })}
-                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                            slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 6 }}>
@@ -181,7 +179,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                             type="number"
                                             label="Stok"
                                             {...register('stock', { required: 'Stok gerekli' })}
-                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                            slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -193,7 +191,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                 sx={{
                                     width: '100%',
                                     aspectRatio: '1',
-                                    borderRadius: 6,
+                                    borderRadius: 0,
                                     border: '2px dashed',
                                     borderColor: 'divider',
                                     bgcolor: 'grey.50',
@@ -237,7 +235,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                     label="Açıklama"
                                     placeholder="Ürün açıklaması..."
                                     {...register('description')}
-                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                    slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                 />
 
                                 <TextField
@@ -247,7 +245,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                     {...register('tags')}
                                     slotProps={{
                                         input: {
-                                            borderRadius: 3,
+                                            sx: { borderRadius: 3 },
                                             startAdornment: (
                                                 <InputAdornment position="start">
                                                     <Tag size={18} color="#94a3b8" />
@@ -266,7 +264,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                             label="Faydalar"
                                             placeholder="Kas yapımı, Hızlı emilim..."
                                             {...register('benefits')}
-                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                            slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12, md: 6 }}>
@@ -277,7 +275,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                             label="İçerik"
                                             placeholder="Protein, Amino asit..."
                                             {...register('ingredients')}
-                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                            slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -289,7 +287,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                     {...register('usage')}
                                     slotProps={{
                                         input: {
-                                            borderRadius: 3,
+                                            sx: { borderRadius: 3 },
                                             startAdornment: (
                                                 <InputAdornment position="start">
                                                     <History size={18} color="#94a3b8" />
@@ -317,7 +315,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                         sx={{
                             px: 6,
                             py: 1.5,
-                            borderRadius: 3,
+                            borderRadius: 0,
                             boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)'
                         }}
                     >

@@ -9,7 +9,6 @@ import {
     TextField,
     IconButton,
     Avatar,
-    Chip,
     CircularProgress,
     Fade,
     Tooltip,
@@ -76,7 +75,7 @@ const AdminCategories: React.FC = () => {
                     sx={{
                         px: 4,
                         py: 1.5,
-                        borderRadius: 3,
+                        borderRadius: 0,
                         boxShadow: isAdding ? 'none' : '0 10px 20px rgba(16, 185, 129, 0.2)',
                         fontWeight: 800,
                         textTransform: 'none'
@@ -93,7 +92,7 @@ const AdminCategories: React.FC = () => {
                         sx={{
                             p: 3,
                             mb: 6,
-                            borderRadius: 6,
+                            borderRadius: 0,
                             border: '1px solid',
                             borderColor: 'primary.light',
                             bgcolor: 'emerald.50/50',
@@ -111,7 +110,7 @@ const AdminCategories: React.FC = () => {
                             onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
                             slotProps={{
                                 input: {
-                                    sx: { borderRadius: 3, bgcolor: 'white' },
+                                    sx: { borderRadius: 0, bgcolor: 'white' },
                                     startAdornment: (
                                         <InputAdornment position="start">
                                             <Tag size={18} color="#10b981" />
@@ -124,7 +123,7 @@ const AdminCategories: React.FC = () => {
                             variant="contained"
                             onClick={handleAdd}
                             disabled={!newName.trim()}
-                            sx={{ borderRadius: 3, px: 4, fontWeight: 800 }}
+                            sx={{ borderRadius: 0, px: 4, fontWeight: 800 }}
                         >
                             Ekle
                         </Button>
@@ -140,7 +139,7 @@ const AdminCategories: React.FC = () => {
                                 elevation={0}
                                 sx={{
                                     p: 4,
-                                    borderRadius: 6,
+                                    borderRadius: 0,
                                     border: '1px solid',
                                     borderColor: 'divider',
                                     transition: 'all 0.3s ease',
@@ -156,7 +155,7 @@ const AdminCategories: React.FC = () => {
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
                                             autoFocus
-                                            slotProps={{ input: { sx: { borderRadius: 2 } } }}
+                                            slotProps={{ input: { sx: { borderRadius: 0 } } }}
                                         />
                                         <Stack direction="row" spacing={1}>
                                             <Button
@@ -164,7 +163,7 @@ const AdminCategories: React.FC = () => {
                                                 size="small"
                                                 onClick={handleUpdate}
                                                 startIcon={<Save size={14} />}
-                                                sx={{ borderRadius: 2, fontWeight: 800 }}
+                                                sx={{ borderRadius: 0, fontWeight: 800 }}
                                             >
                                                 Kaydet
                                             </Button>
@@ -173,7 +172,7 @@ const AdminCategories: React.FC = () => {
                                                 size="small"
                                                 color="inherit"
                                                 onClick={() => setEditingId(null)}
-                                                sx={{ borderRadius: 2, fontWeight: 800 }}
+                                                sx={{ borderRadius: 0, fontWeight: 800 }}
                                             >
                                                 Vazgeç
                                             </Button>
@@ -182,7 +181,7 @@ const AdminCategories: React.FC = () => {
                                 ) : (
                                     <Box>
                                         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-                                            <Avatar sx={{ bgcolor: 'emerald.50', color: 'primary.main', borderRadius: 3 }}>
+                                            <Avatar sx={{ bgcolor: 'emerald.50', color: 'primary.main', borderRadius: 0 }}>
                                                 <Layers size={22} />
                                             </Avatar>
                                             <Stack direction="row" spacing={1}>

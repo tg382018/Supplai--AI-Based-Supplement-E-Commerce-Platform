@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     Box,
-    Container,
     Typography,
     Grid,
     Paper,
@@ -10,7 +9,6 @@ import {
     Chip,
     CircularProgress,
     Fade,
-    Divider,
     IconButton
 } from '@mui/material';
 import { useAppSelector } from '../../hooks/useRedux';
@@ -21,8 +19,6 @@ import {
     Users,
     Trophy,
     TrendingUp,
-    Clock,
-    CheckCircle2,
     Calendar,
     ArrowUpRight
 } from 'lucide-react';
@@ -77,7 +73,7 @@ const AdminDashboard: React.FC = () => {
                                 elevation={0}
                                 sx={{
                                     p: 4,
-                                    borderRadius: 6,
+                                    borderRadius: 0,
                                     border: '1px solid',
                                     borderColor: 'divider',
                                     borderLeft: `4px solid ${stat.color}`,
@@ -86,7 +82,7 @@ const AdminDashboard: React.FC = () => {
                                 }}
                             >
                                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-                                    <Avatar sx={{ bgcolor: stat.bgcolor, color: stat.color, borderRadius: 3, width: 48, height: 48 }}>
+                                    <Avatar sx={{ bgcolor: stat.bgcolor, color: stat.color, borderRadius: 0, width: 48, height: 48 }}>
                                         {stat.icon}
                                     </Avatar>
                                     <Chip label="CANLI" size="small" sx={{ fontWeight: 900, fontSize: '0.65rem', height: 20, bgcolor: 'grey.50' }} />
@@ -124,7 +120,7 @@ const AdminDashboard: React.FC = () => {
                                                 variant="outlined"
                                                 sx={{
                                                     p: 2.5,
-                                                    borderRadius: 4,
+                                                    borderRadius: 0,
                                                     bgcolor: 'grey.50/30',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -190,7 +186,7 @@ const AdminDashboard: React.FC = () => {
                                                 alignItems: 'center',
                                                 gap: 3,
                                                 p: 2,
-                                                borderRadius: 4,
+                                                borderRadius: 0,
                                                 transition: 'all 0.2s',
                                                 '&:hover': { bgcolor: 'grey.50' }
                                             }}

@@ -113,7 +113,7 @@ export const ProductDetailsPage = () => {
                 </Button>
 
                 <Fade in timeout={800}>
-                    <Grid container spacing={{ xs: 6, lg: 10 }}>
+                    <Grid container spacing={{ xs: 4, lg: 6 }}>
                         {/* Left: Product Media */}
                         <Grid size={{ xs: 12, lg: 6 }}>
                             <Box sx={{ position: 'sticky', top: 100 }}>
@@ -128,10 +128,10 @@ export const ProductDetailsPage = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        p: 6,
+                                        p: 4,
                                         position: 'relative',
                                         overflow: 'hidden',
-                                        boxShadow: '0 20px 40px rgba(0,0,0,0.04)'
+                                        boxShadow: '0 15px 30px rgba(0,0,0,0.03)'
                                     }}
                                 >
                                     {product.imageUrl ? (
@@ -196,30 +196,30 @@ export const ProductDetailsPage = () => {
                                     )}
                                 </Stack>
 
-                                <Typography variant="h1" sx={{ mb: 4, lineHeight: 1.1 }}>
+                                <Typography variant="h3" sx={{ mb: 2, fontWeight: 900, lineHeight: 1.2 }}>
                                     {product.name}
                                 </Typography>
 
-                                <Stack direction="row" alignItems="flex-end" spacing={1.5} sx={{ mb: 6 }}>
-                                    <Typography variant="h2" color="text.primary">
+                                <Stack direction="row" alignItems="flex-end" spacing={1} sx={{ mb: 4 }}>
+                                    <Typography variant="h4" color="text.primary" sx={{ fontWeight: 900 }}>
                                         ₺{product.price.toLocaleString('tr-TR')}
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800, mb: 1, letterSpacing: '0.1em' }}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '0.1em' }}>
                                         KDV DAHİL
                                     </Typography>
                                 </Stack>
 
                                 <Typography
-                                    variant="body1"
+                                    variant="body2"
                                     color="text.secondary"
                                     sx={{
-                                        mb: 8,
-                                        lineHeight: 1.8,
-                                        borderLeft: '4px solid',
+                                        mb: 5,
+                                        lineHeight: 1.6,
+                                        borderLeft: '3px solid',
                                         borderColor: 'emerald.100',
-                                        pl: 4,
+                                        pl: 2,
                                         fontStyle: 'italic',
-                                        fontSize: '1.1rem'
+                                        fontSize: '0.95rem'
                                     }}
                                 >
                                     "{product.description}"
@@ -229,12 +229,12 @@ export const ProductDetailsPage = () => {
                                 <Paper
                                     elevation={0}
                                     sx={{
-                                        p: 4,
-                                        borderRadius: 8,
+                                        p: 3,
+                                        borderRadius: 6,
                                         border: '1px solid',
                                         borderColor: 'divider',
-                                        mb: 6,
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+                                        mb: 4,
+                                        boxShadow: '0 8px 20px rgba(0,0,0,0.02)'
                                     }}
                                 >
                                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
@@ -285,29 +285,28 @@ export const ProductDetailsPage = () => {
                                 </Paper>
 
                                 {/* Specifications */}
-                                <Grid container spacing={4} sx={{ mb: 10 }}>
+                                <Grid container spacing={3} sx={{ mb: 6 }}>
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <Paper sx={{ p: 4, borderRadius: 6, height: '100%' }}>
-                                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                                                <Sparkles size={20} color="#ff8e3c" />
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>KAZANIMLAR</Typography>
+                                        <Paper sx={{ p: 3, borderRadius: 5, height: '100%' }}>
+                                            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+                                                <Sparkles size={18} color="#ff8e3c" />
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>KAZANIMLAR</Typography>
                                             </Stack>
-                                            <Stack spacing={2}>
+                                            <Stack spacing={1.5}>
                                                 {product.benefits?.map((ben, i) => (
-                                                    <Stack key={i} direction="row" spacing={1.5} alignItems="center">
-                                                        <CheckCircle2 size={16} color="#10b981" />
-                                                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{ben}</Typography>
+                                                    <Stack key={i} direction="row" spacing={1} alignItems="center">
+                                                        <CheckCircle2 size={14} color="#10b981" />
+                                                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>{ben}</Typography>
                                                     </Stack>
                                                 ))}
                                             </Stack>
                                         </Paper>
                                     </Grid>
-
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <Paper sx={{ p: 4, borderRadius: 6, height: '100%' }}>
-                                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                                                <Info size={20} color="#10b981" />
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>İÇERİKLER</Typography>
+                                        <Paper sx={{ p: 3, borderRadius: 5, height: '100%' }}>
+                                            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+                                                <Info size={18} color="#10b981" />
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>İÇERİKLER</Typography>
                                             </Stack>
                                             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                                                 {product.ingredients?.map((ing, i) => (
@@ -316,7 +315,7 @@ export const ProductDetailsPage = () => {
                                                         label={ing}
                                                         size="small"
                                                         variant="outlined"
-                                                        sx={{ fontWeight: 800, color: 'text.secondary', borderColor: 'divider' }}
+                                                        sx={{ fontWeight: 700, color: 'text.secondary', borderColor: 'divider', fontSize: '0.7rem' }}
                                                     />
                                                 ))}
                                             </Stack>

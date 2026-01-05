@@ -7,10 +7,9 @@ import {
     IconButton,
     TextField,
     Avatar,
-    CircularProgress,
     Fade,
-    Divider,
-    Grid
+    Grid,
+    Chip
 } from '@mui/material';
 import { aiService } from '../services';
 import { ProductCard } from './ProductCard';
@@ -21,8 +20,7 @@ import {
     User,
     Sparkles,
     RefreshCcw,
-    AlertCircle,
-    CheckCircle2
+    AlertCircle
 } from 'lucide-react';
 
 interface Message {

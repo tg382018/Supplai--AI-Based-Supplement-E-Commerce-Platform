@@ -13,7 +13,9 @@ import {
     Divider,
     CircularProgress,
     Stack,
-    Fade
+    Fade,
+    Paper,
+    Container
 } from '@mui/material';
 import { useAppSelector } from '../../hooks/useRedux';
 import {
@@ -21,7 +23,6 @@ import {
     Package,
     Layers,
     ShoppingBag,
-    Settings,
     Shield
 } from 'lucide-react';
 
@@ -82,7 +83,7 @@ const AdminLayout: React.FC = () => {
             >
                 <Box sx={{ p: 4, pt: 5 }}>
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 3, width: 44, height: 44 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 0, width: 44, height: 44 }}>
                             <Shield size={24} color="white" />
                         </Avatar>
                         <Box>
@@ -106,7 +107,7 @@ const AdminLayout: React.FC = () => {
                                     component={NavLink}
                                     to={item.to}
                                     sx={{
-                                        borderRadius: 4,
+                                        borderRadius: 0,
                                         py: 1.5,
                                         bgcolor: isActive ? 'emerald.50' : 'transparent',
                                         color: isActive ? 'primary.main' : 'text.secondary',
@@ -140,7 +141,7 @@ const AdminLayout: React.FC = () => {
                         elevation={0}
                         sx={{
                             p: 3,
-                            borderRadius: 6,
+                            borderRadius: 0,
                             bgcolor: 'grey.50',
                             border: '1px solid',
                             borderColor: 'divider',

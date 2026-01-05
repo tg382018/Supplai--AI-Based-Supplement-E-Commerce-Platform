@@ -9,7 +9,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    IconButton,
     Avatar,
     Chip,
     CircularProgress,
@@ -17,20 +16,12 @@ import {
     Stack,
     Select,
     MenuItem,
-    FormControl,
-    Tooltip,
-    Divider
+    FormControl
 } from '@mui/material';
 import { orderService } from '../../services';
 import type { Order } from '../../types';
 import {
-    Hash,
-    User,
     Calendar,
-    CreditCard,
-    Activity,
-    ExternalLink,
-    ChevronRight,
     ShoppingBag
 } from 'lucide-react';
 
@@ -95,7 +86,7 @@ export const AdminOrders: React.FC = () => {
                     component={Paper}
                     elevation={0}
                     sx={{
-                        borderRadius: 8,
+                        borderRadius: 0,
                         border: '1px solid',
                         borderColor: 'divider',
                         overflow: 'hidden',
@@ -162,7 +153,7 @@ export const AdminOrders: React.FC = () => {
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                                 sx={{
-                                                    borderRadius: 2,
+                                                    borderRadius: 0,
                                                     fontSize: '0.75rem',
                                                     fontWeight: 800,
                                                     '& .MuiSelect-select': { py: 1 }

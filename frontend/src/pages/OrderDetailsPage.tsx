@@ -12,8 +12,7 @@ import {
     Avatar,
     Divider,
     CircularProgress,
-    Fade,
-    Link
+    Fade
 } from '@mui/material';
 import { useAppDispatch } from '../hooks';
 import { clearCart } from '../store/slices';

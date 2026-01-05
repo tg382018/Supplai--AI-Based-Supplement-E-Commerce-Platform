@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Stack, Fade, Chip } from '@mui/material';
+import { Box, Container, Typography, Fade, Chip } from '@mui/material';
 import { AiChat, Footer } from '../components';
 import { Sparkles } from 'lucide-react';
 
