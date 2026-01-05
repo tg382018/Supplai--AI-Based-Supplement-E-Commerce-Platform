@@ -1,7 +1,10 @@
 export * from './HomePage';
 export * from './ProductsPage';
+export * from './ProductDetailsPage';
 export * from './LoginPage';
 export * from './RegisterPage';
+export * from './VerifyPage';
 export * from './CartPage';
+export * from './OrderDetailsPage';
+export * from './OrdersPage';
 export * from './AiAdvisorPage';
-export { default as VerifyPage } from './VerifyPage';

@@ -63,7 +63,7 @@ export class StorageService implements OnModuleInit {
             { 'Content-Type': file.mimetype },
         );
 
-        const endpoint = this.configService.get<string>('minio.endpoint') || 'localhost';
+        const endpoint = this.configService.get<string>('minio.publicEndpoint') || 'localhost';
         const port = this.configService.get<number>('minio.port') || 9000;
         const useSSL = this.configService.get<boolean>('minio.useSSL') || false;
         const protocol = useSSL ? 'https' : 'http';

@@ -12,10 +12,13 @@ import AdminCategories from './pages/admin/AdminCategories';
 import {
   HomePage,
   ProductsPage,
+  ProductDetailsPage,
   LoginPage,
   RegisterPage,
   VerifyPage,
   CartPage,
+  OrderDetailsPage,
+  OrdersPage,
   AiAdvisorPage,
 } from './pages';
 
@@ -37,10 +40,13 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<ProductDetailsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify" element={<VerifyPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailsPage />} />
             <Route path="/ai-advisor" element={<AiAdvisorPage />} />
 
             {/* Admin Routes */}

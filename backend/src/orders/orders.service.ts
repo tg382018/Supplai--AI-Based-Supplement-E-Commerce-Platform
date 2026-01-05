@@ -54,18 +54,6 @@ export class OrdersService {
             },
         });
 
-        // Update product stock
-        for (const item of dto.items) {
-            await this.prisma.product.update({
-                where: { id: item.productId },
-                data: {
-                    stock: {
-                        decrement: item.quantity,
-                    },
-                },
-            });
-        }
-
         return order;
     }
 
@@ -142,8 +130,28 @@ export class OrdersService {
     }
 
     async markAsPaid(stripeSessionId: string, stripePaymentId: string) {
-        return this.prisma.order.updateMany({
+        // Find the order first to get its items
+        const order = await this.prisma.order.findFirst({
             where: { stripeSessionId },
+            include: { items: true },
+        });
+
+        if (!order) return;
+
+        // Update product stock only now
+        for (const item of order.items) {
+            await this.prisma.product.update({
+                where: { id: item.productId },
+                data: {
+                    stock: {
+                        decrement: item.quantity,
+                    },
+                },
+            });
+        }
+
+        return this.prisma.order.update({
+            where: { id: order.id },
             data: {
                 status: OrderStatus.PAID,
                 stripePaymentId,

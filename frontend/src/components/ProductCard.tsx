@@ -12,7 +12,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
-        dispatch(addToCart(product));
+        dispatch(addToCart({ product }));
     };
 
     return (

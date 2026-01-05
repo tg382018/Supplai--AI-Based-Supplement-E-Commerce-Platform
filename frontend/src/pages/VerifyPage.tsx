@@ -8,7 +8,7 @@ interface VerifyFormData {
     code: string;
 }
 
-const VerifyPage: React.FC = () => {
+export const VerifyPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useAppDispatch();
@@ -109,4 +109,3 @@ const VerifyPage: React.FC = () => {
     );
 };
 
-export default VerifyPage;

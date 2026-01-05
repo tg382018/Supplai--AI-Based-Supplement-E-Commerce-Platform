@@ -136,10 +136,16 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
             })
             // Fetch User
+            .addCase(fetchUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(fetchUser.fulfilled, (state, action) => {
+                state.loading = false;
                 state.user = action.payload;
             })
             .addCase(fetchUser.rejected, (state) => {
+                state.loading = false;
                 state.isAuthenticated = false;
                 state.accessToken = null;
                 state.refreshToken = null;

@@ -47,6 +47,8 @@ services:
       - DATABASE_URL=postgresql://supplai:supplai123@postgres:5432/supplai?schema=public
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
+      - MINIO_PUBLIC_ENDPOINT=localhost
+      - FRONTEND_URL=http://localhost
     depends_on:
       postgres:
         condition: service_healthy
