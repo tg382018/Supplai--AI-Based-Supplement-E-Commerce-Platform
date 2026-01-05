@@ -101,7 +101,7 @@ const AdminDashboard: React.FC = () => {
                         <Paper
                             elevation={0}
                             sx={{
-                                borderRadius: 8,
+                                borderRadius: 0,
                                 border: '1px solid',
                                 borderColor: 'divider',
                                 overflow: 'hidden'
@@ -167,7 +167,7 @@ const AdminDashboard: React.FC = () => {
                         <Paper
                             elevation={0}
                             sx={{
-                                borderRadius: 8,
+                                borderRadius: 0,
                                 border: '1px solid',
                                 borderColor: 'divider',
                                 overflow: 'hidden'

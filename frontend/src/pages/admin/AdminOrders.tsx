@@ -22,7 +22,8 @@ import { orderService } from '../../services';
 import type { Order } from '../../types';
 import {
     Calendar,
-    ShoppingBag
+    ShoppingBag,
+    MapPin
 } from 'lucide-react';
 
 export const AdminOrders: React.FC = () => {
@@ -99,6 +100,7 @@ export const AdminOrders: React.FC = () => {
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Sipariş No</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Müşteri</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Tarih</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Adres</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Toplam</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Durum</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', textAlign: 'right' }}>İşlem</TableCell>
@@ -138,6 +140,14 @@ export const AdminOrders: React.FC = () => {
                                         <Typography variant="subtitle2" sx={{ fontWeight: 900, color: 'primary.main' }}>
                                             ₺{order.total.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                                         </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ color: 'text.secondary', maxWidth: 250 }}>
+                                            <MapPin size={14} style={{ marginTop: 2, flexShrink: 0 }} />
+                                            <Typography variant="caption" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+                                                {order.shippingAddress || 'Adres belirtilmemiş'}
+                                            </Typography>
+                                        </Stack>
                                     </TableCell>
                                     <TableCell>
                                         <Chip

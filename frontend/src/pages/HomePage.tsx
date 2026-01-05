@@ -30,7 +30,6 @@ import {
     Sparkles,
     Zap,
     ShieldCheck,
-    Truck,
     ShoppingBag
 } from 'lucide-react';
 

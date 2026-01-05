@@ -14,12 +14,17 @@ import {
     Alert,
     CircularProgress,
     Fade,
-    Chip
+    Chip,
+    TextField,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    FormControl
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { removeFromCart, updateQuantity, clearCart } from '../store/slices';
+import { removeFromCart, updateQuantity, clearCart, fetchAddresses, addAddress } from '../store/slices';
 import { orderService } from '../services';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Footer } from '../components';
 import {
     Trash2,
@@ -30,7 +35,9 @@ import {
     ShieldCheck,
     Truck,
     RefreshCw,
-    PackageSearch
+    PackageSearch,
+    MapPin,
+    PlusCircle
 } from 'lucide-react';
 
 export const CartPage = () => {
@@ -38,13 +45,55 @@ export const CartPage = () => {
     const navigate = useNavigate();
     const { items, total } = useAppSelector((state) => state.cart);
     const { isAuthenticated } = useAppSelector((state) => state.auth);
+    const { addresses, loading: loadingAddresses } = useAppSelector((state) => state.addresses);
+
     const [loading, setLoading] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+    const [showAddressForm, setShowAddressForm] = useState(false);
+    const [newAddress, setNewAddress] = useState({
+        title: '',
+        address: '',
+        city: '',
+        district: '',
+        phone: ''
+    });
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(fetchAddresses());
+        }
+    }, [dispatch, isAuthenticated]);
+
+    useEffect(() => {
+        if (addresses.length > 0 && !selectedAddressId) {
+            setSelectedAddressId(addresses[0].id);
+        }
+    }, [addresses, selectedAddressId]);
+
+    const handleAddAddress = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await dispatch(addAddress(newAddress)).unwrap();
+            setShowAddressForm(false);
+            setNewAddress({ title: '', address: '', city: '', district: '', phone: '' });
+        } catch (error) {
+            console.error('Failed to add address:', error);
+        }
+    };
 
     const handleCheckout = async () => {
         if (!isAuthenticated) {
             navigate('/login');
             return;
         }
+
+        if (!selectedAddressId) {
+            alert('Lütfen bir teslimat adresi seçin.');
+            return;
+        }
+
+        const selectedAddr = addresses.find(a => a.id === selectedAddressId);
+        if (!selectedAddr) return;
 
         setLoading(true);
         try {
@@ -53,6 +102,7 @@ export const CartPage = () => {
                     productId: item.product.id,
                     quantity: item.quantity,
                 })),
+                shippingAddress: `${selectedAddr.title}: ${selectedAddr.address}, ${selectedAddr.district}/${selectedAddr.city} - Tel: ${selectedAddr.phone}`
             };
 
             const order = await orderService.createOrder(orderData);
@@ -81,7 +131,7 @@ export const CartPage = () => {
                                     bgcolor: 'grey.50',
                                     mx: 'auto',
                                     mb: 4,
-                                    borderRadius: 8
+                                    borderRadius: 0
                                 }}
                             >
                                 <PackageSearch size={48} color="#cbd5e1" />
@@ -98,7 +148,7 @@ export const CartPage = () => {
                                 startIcon={<ShoppingBag size={20} />}
                                 endIcon={<ArrowRight size={20} />}
                                 sx={{
-                                    borderRadius: 4,
+                                    borderRadius: 0,
                                     px: 6,
                                     py: 2,
                                     fontWeight: 900,
@@ -118,7 +168,7 @@ export const CartPage = () => {
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
             <Container maxWidth="lg">
                 <Stack direction="row" spacing={3} alignItems="flex-end" sx={{ mb: 8 }}>
-                    <Box sx={{ p: 2, bgcolor: 'emerald.50', borderRadius: 4, display: 'flex' }}>
+                    <Box sx={{ p: 2, bgcolor: 'emerald.50', borderRadius: 0, display: 'flex' }}>
                         <ShoppingBag size={32} color="#10b981" />
                     </Box>
                     <Box>
@@ -162,7 +212,7 @@ export const CartPage = () => {
                                         elevation={0}
                                         sx={{
                                             p: 3,
-                                            borderRadius: 8,
+                                            borderRadius: 0,
                                             border: '1px solid',
                                             borderColor: 'divider',
                                             transition: 'all 0.3s ease',
@@ -182,7 +232,7 @@ export const CartPage = () => {
                                                     <Box
                                                         sx={{
                                                             aspectRatio: '1/1',
-                                                            borderRadius: 4,
+                                                            borderRadius: 0,
                                                             overflow: 'hidden',
                                                             bgcolor: 'grey.50',
                                                             display: 'flex',
@@ -231,7 +281,7 @@ export const CartPage = () => {
                                                             sx={{
                                                                 display: 'flex',
                                                                 alignItems: 'center',
-                                                                borderRadius: 3,
+                                                                borderRadius: 0,
                                                                 p: 0.5,
                                                                 bgcolor: 'background.default'
                                                             }}
@@ -285,12 +335,144 @@ export const CartPage = () => {
 
                         {/* Summary Sidebar */}
                         <Grid size={{ xs: 12, lg: 4 }}>
-                            <Box sx={{ position: 'sticky', top: 100 }}>
+                            <Stack spacing={4} sx={{ position: 'sticky', top: 100 }}>
+                                {/* Address Selection */}
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 4,
+                                        borderRadius: 0,
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        bgcolor: 'white'
+                                    }}
+                                >
+                                    <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+                                        <MapPin size={24} color="#10b981" />
+                                        <Typography variant="h6" sx={{ fontWeight: 800 }}>Teslimat Adresi</Typography>
+                                    </Stack>
+
+                                    {isAuthenticated ? (
+                                        <>
+                                            {loadingAddresses ? (
+                                                <CircularProgress size={24} />
+                                            ) : addresses.length > 0 ? (
+                                                <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
+                                                    <RadioGroup
+                                                        value={selectedAddressId}
+                                                        onChange={(e) => setSelectedAddressId(e.target.value)}
+                                                    >
+                                                        {addresses.map((addr) => (
+                                                            <Paper
+                                                                key={addr.id}
+                                                                variant="outlined"
+                                                                sx={{
+                                                                    mb: 1.5,
+                                                                    borderRadius: 0,
+                                                                    borderColor: selectedAddressId === addr.id ? 'primary.main' : 'divider',
+                                                                    bgcolor: selectedAddressId === addr.id ? 'emerald.50' : 'transparent',
+                                                                }}
+                                                            >
+                                                                <FormControlLabel
+                                                                    value={addr.id}
+                                                                    control={<Radio size="small" />}
+                                                                    label={
+                                                                        <Box sx={{ py: 1.5 }}>
+                                                                            <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{addr.title}</Typography>
+                                                                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>{addr.city}/{addr.district}</Typography>
+                                                                        </Box>
+                                                                    }
+                                                                    sx={{ width: '100%', m: 0, pl: 1.5 }}
+                                                                />
+                                                            </Paper>
+                                                        ))}
+                                                    </RadioGroup>
+                                                </FormControl>
+                                            ) : (
+                                                <Alert severity="warning" sx={{ mb: 3 }}>Henüz kayıtlı adresiniz yok.</Alert>
+                                            )}
+
+                                            {!showAddressForm ? (
+                                                <Button
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    startIcon={<PlusCircle size={18} />}
+                                                    onClick={() => setShowAddressForm(true)}
+                                                    sx={{ borderRadius: 0, borderStyle: 'dashed', borderWidth: 2 }}
+                                                >
+                                                    Yeni Adres Ekle
+                                                </Button>
+                                            ) : (
+                                                <Box component="form" onSubmit={handleAddAddress} sx={{ mt: 2 }}>
+                                                    <Stack spacing={2}>
+                                                        <TextField
+                                                            label="Adres Başlığı (Ev, İş vb.)"
+                                                            size="small"
+                                                            fullWidth
+                                                            required
+                                                            value={newAddress.title}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, title: e.target.value })}
+                                                            InputProps={{ sx: { borderRadius: 0 } }}
+                                                        />
+                                                        <TextField
+                                                            label="Tam Adres"
+                                                            size="small"
+                                                            fullWidth
+                                                            multiline
+                                                            rows={2}
+                                                            required
+                                                            value={newAddress.address}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+                                                            InputProps={{ sx: { borderRadius: 0 } }}
+                                                        />
+                                                        <Stack direction="row" spacing={2}>
+                                                            <TextField
+                                                                label="İl"
+                                                                size="small"
+                                                                fullWidth
+                                                                required
+                                                                value={newAddress.city}
+                                                                onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                                InputProps={{ sx: { borderRadius: 0 } }}
+                                                            />
+                                                            <TextField
+                                                                label="İlçe"
+                                                                size="small"
+                                                                fullWidth
+                                                                required
+                                                                value={newAddress.district}
+                                                                onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+                                                                InputProps={{ sx: { borderRadius: 0 } }}
+                                                            />
+                                                        </Stack>
+                                                        <TextField
+                                                            label="Telefon"
+                                                            size="small"
+                                                            fullWidth
+                                                            required
+                                                            value={newAddress.phone}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                                                            InputProps={{ sx: { borderRadius: 0 } }}
+                                                        />
+                                                        <Stack direction="row" spacing={1}>
+                                                            <Button type="submit" variant="contained" fullWidth sx={{ borderRadius: 0 }}>Kaydet</Button>
+                                                            <Button onClick={() => setShowAddressForm(false)} variant="text" fullWidth sx={{ borderRadius: 0 }}>İptal</Button>
+                                                        </Stack>
+                                                    </Stack>
+                                                </Box>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Alert severity="info">Adres seçimi için giriş yapmalısınız.</Alert>
+                                    )}
+                                </Paper>
+
+                                {/* Order Summary */}
                                 <Paper
                                     elevation={0}
                                     sx={{
                                         p: 5,
-                                        borderRadius: 10,
+                                        borderRadius: 0,
                                         border: '1px solid',
                                         borderColor: 'divider',
                                         boxShadow: '0 20px 40px rgba(0,0,0,0.04)',
@@ -329,12 +511,12 @@ export const CartPage = () => {
                                         fullWidth
                                         variant="contained"
                                         size="large"
-                                        disabled={loading}
+                                        disabled={loading || (isAuthenticated && !selectedAddressId)}
                                         onClick={handleCheckout}
                                         endIcon={!loading && <ArrowRight size={20} />}
                                         sx={{
                                             py: 2,
-                                            borderRadius: 6,
+                                            borderRadius: 0,
                                             fontSize: '1.1rem',
                                             boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
                                         }}
@@ -347,7 +529,7 @@ export const CartPage = () => {
                                             severity="info"
                                             sx={{
                                                 mt: 3,
-                                                borderRadius: 4,
+                                                borderRadius: 0,
                                                 '& .MuiAlert-message': { fontWeight: 700, fontSize: '0.8rem' }
                                             }}
                                         >
@@ -358,7 +540,7 @@ export const CartPage = () => {
                                     {/* Trust Badges */}
                                     <Grid container spacing={2} sx={{ mt: 6 }}>
                                         <Grid size={{ xs: 6 }}>
-                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 4 }}>
+                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 0 }}>
                                                 <ShieldCheck size={24} color="#94a3b8" />
                                                 <Typography variant="caption" sx={{ display: 'block', mt: 1, fontWeight: 800, color: 'text.secondary' }}>
                                                     GÜVENLİ
@@ -366,7 +548,7 @@ export const CartPage = () => {
                                             </Box>
                                         </Grid>
                                         <Grid size={{ xs: 6 }}>
-                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 4 }}>
+                                            <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 0 }}>
                                                 <Truck size={24} color="#94a3b8" />
                                                 <Typography variant="caption" sx={{ display: 'block', mt: 1, fontWeight: 800, color: 'text.secondary' }}>
                                                     HIZLI
@@ -375,7 +557,7 @@ export const CartPage = () => {
                                         </Grid>
                                     </Grid>
                                 </Paper>
-                            </Box>
+                            </Stack>
                         </Grid>
                     </Grid>
                 </Fade>

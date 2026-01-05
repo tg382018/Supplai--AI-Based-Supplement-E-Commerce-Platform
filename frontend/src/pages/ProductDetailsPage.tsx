@@ -88,7 +88,7 @@ export const ProductDetailsPage = () => {
                     variant="outlined"
                     color="secondary"
                     onClick={() => navigate('/products')}
-                    sx={{ borderRadius: 3, px: 4, py: 1.5, fontWeight: 800 }}
+                    sx={{ borderRadius: 0, px: 4, py: 1.5, fontWeight: 800 }}
                 >
                     Mağazaya Dön
                 </Button>
@@ -121,7 +121,7 @@ export const ProductDetailsPage = () => {
                                     elevation={0}
                                     sx={{
                                         aspectRatio: '1/1',
-                                        borderRadius: 10,
+                                        borderRadius: 0,
                                         bgcolor: 'white',
                                         border: '1px solid',
                                         borderColor: 'divider',
@@ -230,7 +230,7 @@ export const ProductDetailsPage = () => {
                                     elevation={0}
                                     sx={{
                                         p: 3,
-                                        borderRadius: 6,
+                                        borderRadius: 0,
                                         border: '1px solid',
                                         borderColor: 'divider',
                                         mb: 4,
@@ -243,7 +243,7 @@ export const ProductDetailsPage = () => {
                                             sx={{
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                borderRadius: 4,
+                                                borderRadius: 0,
                                                 p: 0.5,
                                                 bgcolor: 'background.default'
                                             }}
@@ -274,7 +274,7 @@ export const ProductDetailsPage = () => {
                                             startIcon={<ShoppingCart size={22} />}
                                             sx={{
                                                 py: 2,
-                                                borderRadius: 6,
+                                                borderRadius: 0,
                                                 fontSize: '1.1rem',
                                                 boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
                                             }}
@@ -287,7 +287,7 @@ export const ProductDetailsPage = () => {
                                 {/* Specifications */}
                                 <Grid container spacing={3} sx={{ mb: 6 }}>
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <Paper sx={{ p: 3, borderRadius: 5, height: '100%' }}>
+                                        <Paper sx={{ p: 3, borderRadius: 0, height: '100%' }}>
                                             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
                                                 <Sparkles size={18} color="#ff8e3c" />
                                                 <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>KAZANIMLAR</Typography>
@@ -303,7 +303,7 @@ export const ProductDetailsPage = () => {
                                         </Paper>
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <Paper sx={{ p: 3, borderRadius: 5, height: '100%' }}>
+                                        <Paper sx={{ p: 3, borderRadius: 0, height: '100%' }}>
                                             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
                                                 <Info size={18} color="#10b981" />
                                                 <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>İÇERİKLER</Typography>

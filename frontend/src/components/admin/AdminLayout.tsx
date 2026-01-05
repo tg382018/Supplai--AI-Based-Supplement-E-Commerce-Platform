@@ -77,7 +77,9 @@ const AdminLayout: React.FC = () => {
                         bgcolor: 'white',
                         borderRight: '1px solid',
                         borderColor: 'divider',
-                        backgroundImage: 'none'
+                        backgroundImage: 'none',
+                        top: { xs: 88, md: 96 },
+                        height: { xs: 'calc(100vh - 88px)', md: 'calc(100vh - 96px)' }
                     },
                 }}
             >

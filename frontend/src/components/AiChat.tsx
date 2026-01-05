@@ -78,7 +78,7 @@ export const AiChat = () => {
     };
 
     return (
-        <Grid container spacing={4} sx={{ height: { lg: 750 } }}>
+        <Grid container spacing={4} sx={{ height: { lg: 600 } }}>
             {/* Chat Container */}
             <Grid size={{ xs: 12, lg: recommendations.length > 0 ? 7 : 12 }}>
                 <Paper
@@ -87,7 +87,7 @@ export const AiChat = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         height: '100%',
-                        borderRadius: 10,
+                        borderRadius: 0,
                         border: '1px solid',
                         borderColor: 'divider',
                         overflow: 'hidden',
@@ -99,10 +99,10 @@ export const AiChat = () => {
                     <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Stack direction="row" spacing={2} alignItems="center">
                             <Box sx={{ position: 'relative' }}>
-                                <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.main', borderRadius: 4 }}>
+                                <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.main', borderRadius: 0 }}>
                                     <Bot size={24} color="white" />
                                 </Avatar>
-                                <Box sx={{ position: 'absolute', bottom: -2, right: -2, width: 12, height: 12, bgcolor: 'success.main', border: '2px solid white', borderRadius: '50%' }} />
+                                <Box sx={{ position: 'absolute', bottom: -2, right: -2, width: 12, height: 12, bgcolor: 'success.main', border: '2px solid white', borderRadius: 0 }} />
                             </Box>
                             <Box>
                                 <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.2 }}>AI Sağlık Danışmanı</Typography>
@@ -135,7 +135,7 @@ export const AiChat = () => {
                                                     width: 32,
                                                     height: 32,
                                                     bgcolor: message.role === 'user' ? 'grey.200' : 'emerald.50',
-                                                    borderRadius: 2
+                                                    borderRadius: 0
                                                 }}
                                             >
                                                 {message.role === 'user' ? <User size={16} color="#64748b" /> : <Sparkles size={16} color="#10b981" />}
@@ -144,7 +144,7 @@ export const AiChat = () => {
                                                 elevation={0}
                                                 sx={{
                                                     p: 2.5,
-                                                    borderRadius: message.role === 'user' ? '20px 20px 0 20px' : '20px 20px 20px 0',
+                                                    borderRadius: 0,
                                                     bgcolor: message.role === 'user' ? 'grey.900' : 'white',
                                                     color: message.role === 'user' ? 'white' : 'text.primary',
                                                     border: message.role === 'user' ? 'none' : '1px solid',
@@ -162,14 +162,14 @@ export const AiChat = () => {
                                 <Fade in timeout={500}>
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                                         <Stack direction="row" spacing={2} alignItems="center">
-                                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'emerald.50', borderRadius: 2 }}>
+                                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'emerald.50', borderRadius: 0 }}>
                                                 <Sparkles size={16} color="#10b981" />
                                             </Avatar>
-                                            <Paper sx={{ p: 2, borderRadius: '20px 20px 20px 0', bgcolor: 'white', border: '1px solid', borderColor: 'divider' }}>
+                                            <Paper sx={{ p: 2, borderRadius: 0, bgcolor: 'white', border: '1px solid', borderColor: 'divider' }}>
                                                 <Stack direction="row" spacing={1}>
-                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: '50%', animation: 'bounce 1s infinite' }} />
-                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: '50%', animation: 'bounce 1s infinite', animationDelay: '0.2s' }} />
-                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: '50%', animation: 'bounce 1s infinite', animationDelay: '0.4s' }} />
+                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: 0, animation: 'bounce 1s infinite' }} />
+                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: 0, animation: 'bounce 1s infinite', animationDelay: '0.2s' }} />
+                                                    <Box sx={{ width: 6, height: 6, bgcolor: 'primary.main', borderRadius: 0, animation: 'bounce 1s infinite', animationDelay: '0.4s' }} />
                                                 </Stack>
                                             </Paper>
                                         </Stack>
@@ -197,7 +197,7 @@ export const AiChat = () => {
                                             sx={{
                                                 bgcolor: 'primary.main',
                                                 color: 'white',
-                                                borderRadius: 3,
+                                                borderRadius: 0,
                                                 '&:hover': { bgcolor: 'primary.dark' },
                                                 '&.Mui-disabled': { bgcolor: 'grey.100', color: 'grey.400' }
                                             }}
@@ -205,7 +205,7 @@ export const AiChat = () => {
                                             <Send size={18} />
                                         </IconButton>
                                     ),
-                                    sx: { borderRadius: 4, py: 1 }
+                                    sx: { borderRadius: 0, py: 1 }
                                 }
                             }}
                         />
@@ -222,7 +222,7 @@ export const AiChat = () => {
                     <Fade in timeout={800}>
                         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 4 }}>
-                                <Avatar sx={{ bgcolor: 'secondary.main', borderRadius: 4 }}>
+                                <Avatar sx={{ bgcolor: 'secondary.main', borderRadius: 0 }}>
                                     <Sparkles size={20} color="white" />
                                 </Avatar>
                                 <Typography variant="h4" sx={{ textTransform: 'uppercase', letterSpacing: '0.02em', flex: 1 }}>Önerilen Ürünler</Typography>
@@ -242,14 +242,14 @@ export const AiChat = () => {
                                     mt: 4,
                                     p: 3,
                                     bgcolor: 'emerald.50',
-                                    borderRadius: 6,
+                                    borderRadius: 0,
                                     border: '1px solid',
                                     borderColor: 'emerald.100',
                                     display: 'flex',
                                     gap: 3
                                 }}
                             >
-                                <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 3 }}>
+                                <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 0 }}>
                                     <AlertCircle size={24} color="white" />
                                 </Avatar>
                                 <Box>
