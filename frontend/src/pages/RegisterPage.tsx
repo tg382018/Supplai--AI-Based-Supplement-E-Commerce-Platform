@@ -19,19 +19,33 @@ import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
 import { register as registerUser, clearError } from '../store/slices/authSlice';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
+import { LegalModal } from '../components/LegalModal';
+import { SALES_AGREEMENT, PRIVACY_POLICY } from '../constants/legalContent';
 
 interface RegisterForm {
     name: string;
     email: string;
     password: string;
     confirmPassword: string;
+    termsAccepted: boolean;
+    privacyAccepted: boolean;
 }
 
 export const RegisterPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalContent, setModalContent] = useState('');
     const { loading, error } = useAppSelector((state) => state.auth);
+
+    const openModal = (title: string, content: string) => {
+        setModalTitle(title);
+        setModalContent(content);
+        setModalOpen(true);
+    };
 
     const {
         register,
@@ -214,6 +228,58 @@ export const RegisterPage = () => {
                                     }}
                                 />
 
+                                <Box>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                {...register('termsAccepted', { required: 'Satış sözleşmesini onaylamanız gerekmektedir' })}
+                                                color="primary"
+                                            />
+                                        }
+                                        label={
+                                            <Typography variant="body2" color="text.secondary">
+                                                <Link
+                                                    component="button"
+                                                    type="button"
+                                                    onClick={() => openModal('Mesafeli Satış Sözleşmesi', SALES_AGREEMENT)}
+                                                    sx={{ fontWeight: 700, textDecoration: 'none', color: 'primary.main', cursor: 'pointer' }}
+                                                >
+                                                    Mesafeli Satış Sözleşmesi
+                                                </Link>
+                                                'ni okudum ve onaylıyorum.
+                                            </Typography>
+                                        }
+                                    />
+                                    {errors.termsAccepted && (
+                                        <FormHelperText error>{errors.termsAccepted.message}</FormHelperText>
+                                    )}
+
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                {...register('privacyAccepted', { required: 'Gizlilik politikasını onaylamanız gerekmektedir' })}
+                                                color="primary"
+                                            />
+                                        }
+                                        label={
+                                            <Typography variant="body2" color="text.secondary">
+                                                <Link
+                                                    component="button"
+                                                    type="button"
+                                                    onClick={() => openModal('Gizlilik Politikası', PRIVACY_POLICY)}
+                                                    sx={{ fontWeight: 700, textDecoration: 'none', color: 'primary.main', cursor: 'pointer' }}
+                                                >
+                                                    Gizlilik Politikası
+                                                </Link>
+                                                'nı okudum ve onaylıyorum.
+                                            </Typography>
+                                        }
+                                    />
+                                    {errors.privacyAccepted && (
+                                        <FormHelperText error>{errors.privacyAccepted.message}</FormHelperText>
+                                    )}
+                                </Box>
+
                                 <Button
                                     fullWidth
                                     variant="contained"
@@ -250,6 +316,12 @@ export const RegisterPage = () => {
                                 </Link>
                             </Typography>
                         </Box>
+                        <LegalModal
+                            open={modalOpen}
+                            onClose={() => setModalOpen(false)}
+                            title={modalTitle}
+                            content={modalContent}
+                        />
                     </Paper>
                 </Fade>
             </Container>

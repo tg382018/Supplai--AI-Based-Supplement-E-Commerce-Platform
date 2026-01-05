@@ -18,7 +18,6 @@ import {
     TextField,
     Radio,
     RadioGroup,
-    FormControlLabel,
     FormControl
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
@@ -39,6 +38,13 @@ import {
     MapPin,
     PlusCircle
 } from 'lucide-react';
+import {
+    Checkbox,
+    FormControlLabel,
+    FormHelperText
+} from '@mui/material';
+import { LegalModal } from '../components/LegalModal';
+import { SALES_AGREEMENT, PRIVACY_POLICY } from '../constants/legalContent';
 
 export const CartPage = () => {
     const dispatch = useAppDispatch();
@@ -57,6 +63,19 @@ export const CartPage = () => {
         district: '',
         phone: ''
     });
+
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [privacyAccepted, setPrivacyAccepted] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalContent, setModalContent] = useState('');
+    const [agreementError, setAgreementError] = useState('');
+
+    const openModal = (title: string, content: string) => {
+        setModalTitle(title);
+        setModalContent(content);
+        setModalOpen(true);
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -91,6 +110,12 @@ export const CartPage = () => {
             alert('Lütfen bir teslimat adresi seçin.');
             return;
         }
+
+        if (!termsAccepted || !privacyAccepted) {
+            setAgreementError('Lütfen satış sözleşmesi ve gizlilik politikasını onaylayın.');
+            return;
+        }
+        setAgreementError('');
 
         const selectedAddr = addresses.find(a => a.id === selectedAddressId);
         if (!selectedAddr) return;
@@ -507,6 +532,54 @@ export const CartPage = () => {
                                         </Stack>
                                     </Stack>
 
+                                    <Box sx={{ mb: 2 }}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={termsAccepted}
+                                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                                    color="primary"
+                                                />
+                                            }
+                                            label={
+                                                <Typography variant="body2" color="text.secondary">
+                                                    <Link
+                                                        component="button"
+                                                        onClick={() => openModal('Mesafeli Satış Sözleşmesi', SALES_AGREEMENT)}
+                                                        sx={{ fontWeight: 700, textDecoration: 'none', color: 'primary.main', cursor: 'pointer', textAlign: 'left' }}
+                                                    >
+                                                        Mesafeli Satış Sözleşmesi
+                                                    </Link>
+                                                    'ni okudum ve onaylıyorum.
+                                                </Typography>
+                                            }
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={privacyAccepted}
+                                                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                                    color="primary"
+                                                />
+                                            }
+                                            label={
+                                                <Typography variant="body2" color="text.secondary">
+                                                    <Link
+                                                        component="button"
+                                                        onClick={() => openModal('Gizlilik Politikası', PRIVACY_POLICY)}
+                                                        sx={{ fontWeight: 700, textDecoration: 'none', color: 'primary.main', cursor: 'pointer', textAlign: 'left' }}
+                                                    >
+                                                        Gizlilik Politikası
+                                                    </Link>
+                                                    'nı okudum ve onaylıyorum.
+                                                </Typography>
+                                            }
+                                        />
+                                        {agreementError && (
+                                            <FormHelperText error sx={{ fontWeight: 700 }}>{agreementError}</FormHelperText>
+                                        )}
+                                    </Box>
+
                                     <Button
                                         fullWidth
                                         variant="contained"
@@ -563,6 +636,12 @@ export const CartPage = () => {
                 </Fade>
             </Container>
             <Footer />
+            <LegalModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={modalTitle}
+                content={modalContent}
+            />
         </Box>
     );
 };

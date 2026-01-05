@@ -39,10 +39,15 @@ export const AiChat = () => {
     const [recommendations, setRecommendations] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     };
 
     useEffect(() => {
@@ -123,7 +128,7 @@ export const AiChat = () => {
                     </Box>
 
                     {/* Messages Area */}
-                    <Box sx={{ flex: 1, overflowY: 'auto', p: 4, bgcolor: 'grey.50/30' }}>
+                    <Box ref={chatContainerRef} sx={{ flex: 1, overflowY: 'auto', p: 4, bgcolor: 'grey.50/30' }}>
                         <Stack spacing={4}>
                             {messages.map((message, index) => (
                                 <Fade in key={index} timeout={500}>
@@ -175,7 +180,6 @@ export const AiChat = () => {
                                     </Box>
                                 </Fade>
                             )}
-                            <div ref={messagesEndRef} />
                         </Stack>
                     </Box>
 
