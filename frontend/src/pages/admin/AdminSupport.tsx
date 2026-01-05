@@ -92,6 +92,7 @@ export const AdminSupport = () => {
                                             }}
                                         >
                                             <ListItemText
+                                                disableTypography
                                                 primary={
                                                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                                                         <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
@@ -112,7 +113,7 @@ export const AdminSupport = () => {
                                                         </Typography>
                                                         <Stack direction="row" alignItems="center" spacing={0.5}>
                                                             <Clock size={12} />
-                                                            <Typography variant="caption">
+                                                            <Typography variant="caption" color="text.secondary">
                                                                 {new Date(ticket.updatedAt).toLocaleString('tr-TR')}
                                                             </Typography>
                                                         </Stack>

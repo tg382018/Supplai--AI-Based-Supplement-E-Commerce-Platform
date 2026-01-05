@@ -32,7 +32,7 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async (
-        params: { search?: string; categoryId?: string; page?: number } = {},
+        params: { search?: string; categoryId?: string; page?: number; includeInactive?: boolean } = {},
         { rejectWithValue }
     ) => {
         try {

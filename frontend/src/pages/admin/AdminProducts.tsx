@@ -33,7 +33,7 @@ const AdminProducts: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
 
     useEffect(() => {
-        dispatch(fetchProducts({}));
+        dispatch(fetchProducts({ includeInactive: true }));
     }, [dispatch]);
 
     const handleEdit = (product: Product) => {
@@ -96,6 +96,7 @@ const AdminProducts: React.FC = () => {
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Ürün Adı</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Fiyat</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Stok</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Durum</TableCell>
                                 <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', textAlign: 'right' }}>İşlemler</TableCell>
                             </TableRow>
                         </TableHead>
@@ -103,7 +104,7 @@ const AdminProducts: React.FC = () => {
                             {products.map((product) => (
                                 <TableRow
                                     key={product.id}
-                                    sx={{ '&:hover': { bgcolor: 'grey.50/50' }, transition: 'background-color 0.2s' }}
+                                    sx={{ '&:hover': { bgcolor: 'grey.50/50' }, transition: 'background-color 0.2s', opacity: product.isActive ? 1 : 0.6 }}
                                 >
                                     <TableCell>
                                         <Avatar
@@ -126,6 +127,15 @@ const AdminProducts: React.FC = () => {
                                             label={`${product.stock} Adet`}
                                             size="small"
                                             color={product.stock > 10 ? 'success' : 'error'}
+                                            sx={{ fontWeight: 900, fontSize: '0.7rem', height: 24 }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={product.isActive ? 'Aktif' : 'Pasif'}
+                                            size="small"
+                                            variant={product.isActive ? 'filled' : 'outlined'}
+                                            color={product.isActive ? 'success' : 'default'}
                                             sx={{ fontWeight: 900, fontSize: '0.7rem', height: 24 }}
                                         />
                                     </TableCell>

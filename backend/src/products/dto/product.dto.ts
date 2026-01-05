@@ -91,4 +91,10 @@ export class ProductQueryDto {
     @Type(() => Number)
     @IsOptional()
     limit?: number = 10;
+
+    @ApiPropertyOptional({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    @Type(() => Boolean)
+    includeInactive?: boolean;
 }

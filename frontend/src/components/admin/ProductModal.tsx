@@ -38,6 +38,7 @@ interface ProductFormData {
     benefits: string;
     ingredients: string;
     usage: string;
+    isActive: boolean;
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product }) => {
@@ -62,6 +63,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
             benefits: product?.benefits?.join(', ') || '',
             ingredients: product?.ingredients?.join(', ') || '',
             usage: product?.usage || '',
+            isActive: product?.isActive ?? true,
         },
     });
 
@@ -95,6 +97,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                 tags: data.tags.split(',').map((t) => t.trim()).filter(Boolean),
                 benefits: data.benefits.split(',').map((b) => b.trim()).filter(Boolean),
                 ingredients: data.ingredients.split(',').map((i) => i.trim()).filter(Boolean),
+                isActive: String(data.isActive) === 'true',
             };
 
             if (product) {
@@ -183,6 +186,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
                                         />
                                     </Grid>
                                 </Grid>
+
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Durum"
+                                    {...register('isActive')}
+                                    slotProps={{ input: { sx: { borderRadius: 0 } } }}
+                                >
+                                    <MenuItem value="true">Aktif (Mağazada Görünür)</MenuItem>
+                                    <MenuItem value="false">Pasif (Gizli)</MenuItem>
+                                </TextField>
                             </Stack>
                         </Grid>
 

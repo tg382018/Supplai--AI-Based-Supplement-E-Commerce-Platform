@@ -28,12 +28,14 @@ export class ProductsService {
     }
 
     async findAll(query: ProductQueryDto) {
-        const { search, categoryId, tags, page = 1, limit = 10 } = query;
+        const { search, categoryId, tags, page = 1, limit = 10, includeInactive = false } = query;
         const skip = (page - 1) * limit;
 
-        const where: any = {
-            isActive: true,
-        };
+        const where: any = {};
+
+        if (!includeInactive) {
+            where.isActive = true;
+        }
 
         if (search) {
             where.OR = [
@@ -106,8 +108,9 @@ export class ProductsService {
     async remove(id: string) {
         await this.findOne(id);
 
-        return this.prisma.product.delete({
+        return this.prisma.product.update({
             where: { id },
+            data: { isActive: false }
         });
     }
 
