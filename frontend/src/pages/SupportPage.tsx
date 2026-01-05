@@ -206,9 +206,11 @@ export const SupportPage = () => {
                                             {index > 0 && <Divider />}
                                             <ListItemButton onClick={() => handleSelectTicket(ticket.id)} sx={{ p: 3 }}>
                                                 <ListItemText
+                                                    primaryTypographyProps={{ component: 'div' }}
+                                                    secondaryTypographyProps={{ component: 'div' }}
                                                     primary={
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>{ticket.subject}</Typography>
+                                                            <Typography variant="subtitle1" component="div" sx={{ fontWeight: 800 }}>{ticket.subject}</Typography>
                                                             <Chip
                                                                 label={ticket.status === 'OPEN' ? 'Açık' : 'Kapalı'}
                                                                 color={ticket.status === 'OPEN' ? 'success' : 'default'}
@@ -220,7 +222,7 @@ export const SupportPage = () => {
                                                     secondary={
                                                         <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
                                                             <Clock size={14} />
-                                                            <Typography variant="caption">
+                                                            <Typography variant="caption" component="div">
                                                                 {new Date(ticket.updatedAt).toLocaleDateString('tr-TR')}
                                                             </Typography>
                                                         </Stack>

@@ -23,7 +23,8 @@ import {
     Package,
     Layers,
     ShoppingBag,
-    Shield
+    Shield,
+    Headset
 } from 'lucide-react';
 
 const DRAWER_WIDTH = 280;
@@ -61,6 +62,7 @@ const AdminLayout: React.FC = () => {
         { to: '/admin/products', label: 'Ürün Yönetimi', icon: <Package size={22} /> },
         { to: '/admin/categories', label: 'Kategoriler', icon: <Layers size={22} /> },
         { to: '/admin/orders', label: 'Siparişler', icon: <ShoppingBag size={22} /> },
+        { to: '/admin/support', label: 'Destek Talepleri', icon: <Headset size={22} /> },
     ];
 
     return (

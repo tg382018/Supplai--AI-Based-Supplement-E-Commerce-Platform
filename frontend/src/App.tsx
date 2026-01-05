@@ -12,6 +12,7 @@ import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminCategories from './pages/admin/AdminCategories';
+import AdminSupport from './pages/admin/AdminSupport';
 import {
   HomePage,
   ProductsPage,
@@ -63,6 +64,7 @@ const AppContent = () => {
               <Route path="products" element={<AdminProducts />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="support" element={<AdminSupport />} />
             </Route>
           </Routes>
         </Box>

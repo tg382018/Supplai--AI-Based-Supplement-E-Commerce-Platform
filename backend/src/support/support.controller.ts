@@ -12,40 +12,46 @@ import { SupportService } from './support.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '@prisma/client';
 
-@Controller('support')
+@Controller('api/support')
 @UseGuards(JwtAuthGuard)
 export class SupportController {
     constructor(private readonly supportService: SupportService) { }
 
     @Post('tickets')
     async createTicket(
-        @Request() req,
+        @GetUser('userId') userId: string,
         @Body() body: { subject: string; message: string },
     ) {
-        return this.supportService.createTicket(req.user.id, body.subject, body.message);
+        return this.supportService.createTicket(userId, body.subject, body.message);
     }
 
     @Get('tickets')
-    async getMyTickets(@Request() req) {
-        return this.supportService.getMyTickets(req.user.id);
+    async getMyTickets(@GetUser('userId') userId: string) {
+        return this.supportService.getMyTickets(userId);
     }
 
     @Get('tickets/:id')
-    async getTicketById(@Request() req, @Param('id') id: string) {
-        const isAdmin = req.user.role === Role.ADMIN;
-        return this.supportService.getTicketById(id, req.user.id, isAdmin);
+    async getTicketById(
+        @GetUser('userId') userId: string,
+        @GetUser('role') role: string,
+        @Param('id') id: string
+    ) {
+        const isAdmin = role === Role.ADMIN;
+        return this.supportService.getTicketById(id, userId, isAdmin);
     }
 
     @Post('tickets/:id/messages')
     async addMessage(
-        @Request() req,
+        @GetUser('userId') userId: string,
+        @GetUser('role') role: string,
         @Param('id') id: string,
         @Body() body: { content: string },
     ) {
-        const isAdmin = req.user.role === Role.ADMIN;
-        return this.supportService.addMessage(id, req.user.id, body.content, isAdmin);
+        const isAdmin = role === Role.ADMIN;
+        return this.supportService.addMessage(id, userId, body.content, isAdmin);
     }
 
     // Admin endpoints
