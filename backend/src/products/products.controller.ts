@@ -29,6 +29,12 @@ export class ProductsController {
         return this.productsService.create(dto);
     }
 
+    @Get('filters')
+    @ApiOperation({ summary: 'Get available filter options (tags, benefits, price range)' })
+    getFilterOptions() {
+        return this.productsService.getFilterOptions();
+    }
+
     @Get()
     @ApiOperation({ summary: 'Get all products with filtering' })
     findAll(@Query() query: ProductQueryDto) {
@@ -39,12 +45,6 @@ export class ProductsController {
     @ApiOperation({ summary: 'Get featured products' })
     getFeatured() {
         return this.productsService.getFeatured();
-    }
-
-    @Get('filters')
-    @ApiOperation({ summary: 'Get available filter options (tags, benefits, price range)' })
-    getFilterOptions() {
-        return this.productsService.getFilterOptions();
     }
 
     @Get(':id')

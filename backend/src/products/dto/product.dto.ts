@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
 export class CreateProductDto {
     @ApiProperty({ example: 'Vitamin D3' })
@@ -78,6 +78,7 @@ export class ProductQueryDto {
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
+    @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
     tags?: string[];
 
     @ApiPropertyOptional({ default: 1 })
@@ -108,6 +109,7 @@ export class ProductQueryDto {
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
+    @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
     benefits?: string[];
 
     @ApiPropertyOptional({ enum: ['price_asc', 'price_desc', 'newest'] })

@@ -31,7 +31,6 @@ import {
     fetchFilterOptions,
     setSearch,
     setCategory,
-    setTags,
     setBenefits,
     setPriceRange,
     setSortBy,
@@ -44,7 +43,6 @@ import {
     LayoutGrid,
     RefreshCw,
     ShoppingBag,
-    Tag,
     Beaker,
     Coins,
     ArrowUpDown
@@ -60,7 +58,6 @@ export const ProductsPage = () => {
         loading,
         search,
         selectedCategory,
-        selectedTags,
         selectedBenefits,
         priceRange,
         sortBy,
@@ -69,6 +66,11 @@ export const ProductsPage = () => {
     } = useAppSelector((state) => state.products);
 
     const [searchInput, setSearchInput] = useState(search);
+    const [localPriceRange, setLocalPriceRange] = useState<number[]>(priceRange);
+
+    useEffect(() => {
+        setLocalPriceRange(priceRange);
+    }, [priceRange]);
 
     useEffect(() => {
         const category = searchParams.get('category');
@@ -84,7 +86,6 @@ export const ProductsPage = () => {
             fetchProducts({
                 search,
                 categoryId: selectedCategory || undefined,
-                tags: selectedTags.length > 0 ? selectedTags : undefined,
                 benefits: selectedBenefits.length > 0 ? selectedBenefits : undefined,
                 minPrice: priceRange[0],
                 maxPrice: priceRange[1],
@@ -92,7 +93,7 @@ export const ProductsPage = () => {
                 page: currentPage,
             })
         );
-    }, [dispatch, search, selectedCategory, selectedTags, selectedBenefits, priceRange, sortBy, currentPage]);
+    }, [dispatch, search, selectedCategory, selectedBenefits, priceRange, sortBy, currentPage]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -108,13 +109,6 @@ export const ProductsPage = () => {
         }
     };
 
-    const handleTagToggle = (tag: string) => {
-        const newTags = selectedTags.includes(tag)
-            ? selectedTags.filter(t => t !== tag)
-            : [...selectedTags, tag];
-        dispatch(setTags(newTags));
-    };
-
     const handleBenefitToggle = (benefit: string) => {
         const newBenefits = selectedBenefits.includes(benefit)
             ? selectedBenefits.filter(b => b !== benefit)
@@ -123,6 +117,10 @@ export const ProductsPage = () => {
     };
 
     const handlePriceChange = (_event: Event, newValue: number | number[]) => {
+        setLocalPriceRange(newValue as number[]);
+    };
+
+    const handlePriceChangeCommitted = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
         dispatch(setPriceRange(newValue as [number, number]));
     };
 
@@ -190,8 +188,9 @@ export const ProductsPage = () => {
                 </Stack>
                 <Box sx={{ px: 1 }}>
                     <Slider
-                        value={priceRange}
+                        value={localPriceRange}
                         onChange={handlePriceChange}
+                        onChangeCommitted={handlePriceChangeCommitted}
                         valueLabelDisplay="auto"
                         min={filterOptions.priceRange.min}
                         max={filterOptions.priceRange.max}
@@ -208,38 +207,13 @@ export const ProductsPage = () => {
                     />
                     <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
                         <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
-                            ₺{priceRange[0]}
+                            ₺{localPriceRange[0]}
                         </Typography>
                         <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
-                            ₺{priceRange[1]}
+                            ₺{localPriceRange[1]}
                         </Typography>
                     </Stack>
                 </Box>
-            </Box>
-
-            <Divider />
-
-            {/* Tags */}
-            <Box>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                    <Tag size={18} color="#10b981" />
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Etiketler</Typography>
-                </Stack>
-                <FormGroup>
-                    {filterOptions.tags.map((tag) => (
-                        <FormControlLabel
-                            key={tag}
-                            control={
-                                <Checkbox
-                                    size="small"
-                                    checked={selectedTags.includes(tag)}
-                                    onChange={() => handleTagToggle(tag)}
-                                />
-                            }
-                            label={<Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>{tag}</Typography>}
-                        />
-                    ))}
-                </FormGroup>
             </Box>
 
             <Divider />
@@ -271,7 +245,10 @@ export const ProductsPage = () => {
                 variant="outlined"
                 fullWidth
                 startIcon={<RefreshCw size={18} />}
-                onClick={() => dispatch(resetFilters())}
+                onClick={() => {
+                    dispatch(resetFilters());
+                    setSearchParams({});
+                }}
                 sx={{ borderRadius: 3, py: 1.5, fontWeight: 800 }}
             >
                 Filtreleri Temizle

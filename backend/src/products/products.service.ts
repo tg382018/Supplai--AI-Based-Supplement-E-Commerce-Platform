@@ -28,7 +28,8 @@ export class ProductsService {
     }
 
     async findAll(query: ProductQueryDto) {
-        const { search, categoryId, tags, benefits, minPrice, maxPrice, sortBy, page = 1, limit = 10, includeInactive = false } = query;
+        console.log('--- ProductsService.findAll called with query:', JSON.stringify(query, null, 2));
+        const { search, categoryId, benefits, minPrice, maxPrice, sortBy, page = 1, limit = 10, includeInactive = false } = query;
         const skip = (page - 1) * limit;
 
         const where: any = {};
@@ -48,18 +49,15 @@ export class ProductsService {
             where.categoryId = categoryId;
         }
 
-        if (tags && tags.length > 0) {
-            where.tags = { hasSome: typeof tags === 'string' ? [tags] : tags };
-        }
-
         if (benefits && benefits.length > 0) {
             where.benefits = { hasSome: typeof benefits === 'string' ? [benefits] : benefits };
         }
 
         if (minPrice !== undefined || maxPrice !== undefined) {
             where.price = {};
-            if (minPrice !== undefined) where.price.gte = minPrice;
-            if (maxPrice !== undefined) where.price.lte = maxPrice;
+            if (minPrice !== undefined) where.price.gte = Number(minPrice);
+            if (maxPrice !== undefined) where.price.lte = Number(maxPrice);
+            console.log('--- Price Filter Applied:', where.price);
         }
 
         const order: any = {};
