@@ -1,6 +1,38 @@
 import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Typography,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    IconButton,
+    Avatar,
+    Chip,
+    CircularProgress,
+    Fade,
+    Stack,
+    Select,
+    MenuItem,
+    FormControl,
+    Tooltip,
+    Divider
+} from '@mui/material';
 import { orderService } from '../../services';
 import type { Order } from '../../types';
+import {
+    Hash,
+    User,
+    Calendar,
+    CreditCard,
+    Activity,
+    ExternalLink,
+    ChevronRight,
+    ShoppingBag
+} from 'lucide-react';
 
 export const AdminOrders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -30,76 +62,136 @@ export const AdminOrders: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="text-center py-12 text-gray-400">Yükleniyor...</div>;
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 12 }}>
+                <CircularProgress size={40} thickness={4} color="primary" />
+                <Typography variant="overline" sx={{ mt: 2, fontWeight: 900, color: 'text.secondary' }}>Siparişler Alınıyor...</Typography>
+            </Box>
+        );
+    }
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'PAID': return 'success';
+            case 'SHIPPED': return 'info';
+            case 'DELIVERED': return 'secondary';
+            case 'CANCELLED': return 'error';
+            default: return 'warning';
+        }
+    };
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-white">Sipariş Yönetimi</h1>
+        <Box sx={{ animate: 'fade-in 0.5s ease' }}>
+            <Box sx={{ mb: 6 }}>
+                <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>Sipariş Yönetimi</Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Müşteri siparişlerini takip edin, durumlarını güncelleyin ve gönderim süreçlerini yönetin.
+                </Typography>
+            </Box>
 
-            <div className="glass-card overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-slate-800/50 text-gray-400 text-xs uppercase tracking-wider">
-                                <th className="px-6 py-4 font-semibold">Sipariş No</th>
-                                <th className="px-6 py-4 font-semibold">Müşteri</th>
-                                <th className="px-6 py-4 font-semibold">Tarih</th>
-                                <th className="px-6 py-4 font-semibold">Toplam</th>
-                                <th className="px-6 py-4 font-semibold">Durum</th>
-                                <th className="px-6 py-4 font-semibold">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
+            <Fade in timeout={800}>
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{
+                        borderRadius: 8,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        overflow: 'hidden',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.04)'
+                    }}
+                >
+                    <Table sx={{ minWidth: 900 }}>
+                        <TableHead sx={{ bgcolor: 'grey.50' }}>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Sipariş No</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Müşteri</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Tarih</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Toplam</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Durum</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', textAlign: 'right' }}>İşlem</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
                             {orders.map((order) => (
-                                <tr key={order.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4 font-mono text-sm">#{order.id.slice(0, 8)}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm">
-                                            <p className="font-semibold text-white">{order.user?.name}</p>
-                                            <p className="text-gray-500 text-xs">{order.user?.email}</p>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-400">
-                                        {new Date(order.createdAt).toLocaleDateString('tr-TR')}
-                                    </td>
-                                    <td className="px-6 py-4 font-bold text-primary">
-                                        ₺{order.total.toFixed(2)}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'PAID' ? 'bg-green-500/20 text-green-400' :
-                                            order.status === 'SHIPPED' ? 'bg-blue-500/20 text-blue-400' :
-                                                order.status === 'DELIVERED' ? 'bg-gray-500/20 text-gray-400' :
-                                                    'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
-                                            {order.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <select
-                                            value={order.status}
-                                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                                            className="bg-slate-800 border border-slate-700 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary"
-                                        >
-                                            <option value="PENDING">Bekliyor</option>
-                                            <option value="PAID">Ödendi</option>
-                                            <option value="PROCESSING">Hazırlanıyor</option>
-                                            <option value="SHIPPED">Kargolandı</option>
-                                            <option value="DELIVERED">Teslim Edildi</option>
-                                            <option value="CANCELLED">İptal Edildi</option>
-                                        </select>
-                                    </td>
-                                </tr>
+                                <TableRow
+                                    key={order.id}
+                                    sx={{ '&:hover': { bgcolor: 'grey.50/50' }, transition: 'background-color 0.2s' }}
+                                >
+                                    <TableCell>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 900, fontFamily: 'monospace', color: 'text.secondary' }}>
+                                            #{order.id.slice(0, 8).toUpperCase()}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.main', fontSize: '0.75rem', fontWeight: 900 }}>
+                                                {order.user?.name.charAt(0)}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{order.user?.name}</Typography>
+                                                <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 700 }}>{order.user?.email}</Typography>
+                                            </Box>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
+                                            <Calendar size={14} />
+                                            <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                                                {new Date(order.createdAt).toLocaleDateString('tr-TR')}
+                                            </Typography>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 900, color: 'primary.main' }}>
+                                            ₺{order.total.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={order.status}
+                                            size="small"
+                                            color={getStatusColor(order.status)}
+                                            sx={{ fontWeight: 900, fontSize: '0.65rem', height: 22, px: 1 }}
+                                        />
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                                            <Select
+                                                value={order.status}
+                                                onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                                sx={{
+                                                    borderRadius: 2,
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 800,
+                                                    '& .MuiSelect-select': { py: 1 }
+                                                }}
+                                            >
+                                                <MenuItem value="PENDING" sx={{ fontSize: '0.75rem', fontWeight: 800 }}>BEKLİYOR</MenuItem>
+                                                <MenuItem value="PAID" sx={{ fontSize: '0.75rem', fontWeight: 800 }}>ÖDENDİ</MenuItem>
+                                                <MenuItem value="PROCESSING" sx={{ fontSize: '0.75rem', fontWeight: 800 }}>HAZIRLANIYOR</MenuItem>
+                                                <MenuItem value="SHIPPED" sx={{ fontSize: '0.75rem', fontWeight: 800 }}>KARGOLANDI</MenuItem>
+                                                <MenuItem value="DELIVERED" sx={{ fontSize: '0.75rem', fontWeight: 800 }}>TESLİM EDİLDİ</MenuItem>
+                                                <MenuItem value="CANCELLED" sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'error.main' }}>İPTAL EDİLDİ</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-                {orders.length === 0 && (
-                    <div className="text-center py-12 text-gray-500 italic">
-                        Henüz sipariş bulunmuyor.
-                    </div>
-                )}
-            </div>
-        </div>
+                        </TableBody>
+                    </Table>
+                    {orders.length === 0 && (
+                        <Box sx={{ p: 12, textAlign: 'center' }}>
+                            <Avatar sx={{ width: 80, height: 80, bgcolor: 'grey.50', mx: 'auto', mb: 3 }}>
+                                <ShoppingBag size={40} color="#cbd5e1" />
+                            </Avatar>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.secondary' }}>Sipariş Bulunamadı</Typography>
+                            <Typography variant="body2" color="text.disabled">Henüz mağazanızda gerçekleştirilmiş bir sipariş bulunmuyor.</Typography>
+                        </Box>
+                    )}
+                </TableContainer>
+            </Fade>
+        </Box>
     );
 };
-

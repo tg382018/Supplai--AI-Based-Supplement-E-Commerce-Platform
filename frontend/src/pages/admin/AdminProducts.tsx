@@ -1,12 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Typography,
+    Button,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    IconButton,
+    Avatar,
+    Chip,
+    CircularProgress,
+    Fade,
+    Stack,
+    Tooltip
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { fetchProducts, deleteProduct } from '../../store/slices/productsSlice';
 import ProductModal from '../../components/admin/ProductModal';
 import type { Product } from '../../types';
+import { Plus, Pencil, Trash2, Package, Search } from 'lucide-react';
 
 const AdminProducts: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { products, loading } = useAppSelector((state) => state.auth.user?.role === 'ADMIN' ? state.products : { products: [], loading: false });
+    const { products, loading } = useAppSelector((state) =>
+        state.auth.user?.role === 'ADMIN' ? state.products : { products: [], loading: false }
+    );
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
 
@@ -31,75 +53,123 @@ const AdminProducts: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-white">Ürün Yönetimi</h1>
-                <button
+        <Box sx={{ animate: 'fade-in 0.5s ease' }}>
+            <Box sx={{ mb: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>Ürün Yönetimi</Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+                        Mağazanızdaki ürünleri listeleyin, düzenleyin veya yenilerini ekleyin.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<Plus size={20} />}
                     onClick={handleCreate}
-                    className="btn-primary px-4 py-2 rounded-lg flex items-center gap-2"
+                    sx={{
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 3,
+                        boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)',
+                        fontWeight: 800
+                    }}
                 >
-                    <span>➕</span> Yeni Ürün Ekle
-                </button>
-            </div>
+                    Yeni Ürün Ekle
+                </Button>
+            </Box>
 
-            <div className="glass-card overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-slate-800/50 text-gray-300 text-sm uppercase">
-                            <th className="px-6 py-4 font-semibold">Görsel</th>
-                            <th className="px-6 py-4 font-semibold">Ürün Adı</th>
-                            <th className="px-6 py-4 font-semibold">Fiyat</th>
-                            <th className="px-6 py-4 font-semibold">Stok</th>
-                            <th className="px-6 py-4 font-semibold text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800">
-                        {products.map((product) => (
-                            <tr key={product.id} className="hover:bg-slate-800/30 transition-colors">
-                                <td className="px-6 py-4">
-                                    <img
-                                        src={product.imageUrl || 'https://via.placeholder.com/150'}
-                                        alt={product.name}
-                                        className="w-12 h-12 object-cover rounded-lg"
-                                    />
-                                </td>
-                                <td className="px-6 py-4 font-medium text-white">{product.name}</td>
-                                <td className="px-6 py-4 text-gray-300">${product.price.toFixed(2)}</td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${product.stock > 10 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
-                                        }`}>
-                                        {product.stock} Adet
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            onClick={() => handleEdit(product)}
-                                            className="p-2 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors"
-                                            title="Düzenle"
+            <Fade in timeout={800}>
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{
+                        borderRadius: 8,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        overflow: 'hidden',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.04)'
+                    }}
+                >
+                    <Table sx={{ minWidth: 650 }}>
+                        <TableHead sx={{ bgcolor: 'grey.50' }}>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Görsel</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Ürün Adı</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Fiyat</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Stok</TableCell>
+                                <TableCell sx={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', textAlign: 'right' }}>İşlemler</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {products.map((product) => (
+                                <TableRow
+                                    key={product.id}
+                                    sx={{ '&:hover': { bgcolor: 'grey.50/50' }, transition: 'background-color 0.2s' }}
+                                >
+                                    <TableCell>
+                                        <Avatar
+                                            src={product.imageUrl || ''}
+                                            variant="rounded"
+                                            sx={{ width: 48, height: 48, bgcolor: 'grey.100', border: '1px solid', borderColor: 'divider' }}
                                         >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(product.id)}
-                                            className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"
-                                            title="Sil"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {loading && (
-                    <div className="p-8 text-center text-gray-400">Yükleniyor...</div>
-                )}
-                {!loading && products.length === 0 && (
-                    <div className="p-8 text-center text-gray-400">Ürün bulunamadı.</div>
-                )}
-            </div>
+                                            <Package size={24} color="#94a3b8" />
+                                        </Avatar>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{product.name}</Typography>
+                                        <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 700 }}>#{product.id.slice(0, 8)}</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 900, color: 'primary.main' }}>₺{product.price.toLocaleString('tr-TR')}</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={`${product.stock} Adet`}
+                                            size="small"
+                                            color={product.stock > 10 ? 'success' : 'error'}
+                                            sx={{ fontWeight: 900, fontSize: '0.7rem', height: 24 }}
+                                        />
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                            <Tooltip title="Düzenle">
+                                                <IconButton
+                                                    onClick={() => handleEdit(product)}
+                                                    sx={{ color: 'primary.main', bgcolor: 'emerald.50', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}
+                                                >
+                                                    <Pencil size={18} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title="Sil">
+                                                <IconButton
+                                                    onClick={() => handleDelete(product.id)}
+                                                    sx={{ color: 'error.main', bgcolor: 'error.50', '&:hover': { bgcolor: 'error.main', color: 'white' } }}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {loading && (
+                        <Box sx={{ p: 8, textAlign: 'center' }}>
+                            <CircularProgress size={32} thickness={4} />
+                            <Typography variant="caption" sx={{ display: 'block', mt: 2, fontWeight: 900, color: 'text.secondary' }}>YÜKLENİYOR...</Typography>
+                        </Box>
+                    )}
+                    {!loading && products.length === 0 && (
+                        <Box sx={{ p: 12, textAlign: 'center' }}>
+                            <Avatar sx={{ width: 80, height: 80, bgcolor: 'grey.50', mx: 'auto', mb: 3 }}>
+                                <Package size={40} color="#cbd5e1" />
+                            </Avatar>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.secondary' }}>Ürün Bulunamadı</Typography>
+                            <Typography variant="body2" color="text.disabled">Henüz mağazanıza herhangi bir ürün eklemediniz.</Typography>
+                        </Box>
+                    )}
+                </TableContainer>
+            </Fade>
 
             {isModalOpen && (
                 <ProductModal
@@ -108,7 +178,7 @@ const AdminProducts: React.FC = () => {
                     product={selectedProduct}
                 />
             )}
-        </div>
+        </Box>
     );
 };
 

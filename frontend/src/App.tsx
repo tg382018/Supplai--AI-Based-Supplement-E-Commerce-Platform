@@ -1,7 +1,8 @@
-// Supplai Premium UI - V1.0.1
+// Supplai Premium UI - V1.0.2
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { Box, CssBaseline } from '@mui/material';
 import { store } from './store';
 import { useAppDispatch } from './hooks/useRedux';
 import { fetchUser } from './store/slices/authSlice';
@@ -36,9 +37,10 @@ const AppContent = () => {
 
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
+      <CssBaseline />
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
         <Navbar />
-        <main className="flex-1">
+        <Box component="main" sx={{ flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
@@ -59,8 +61,8 @@ const AppContent = () => {
               <Route path="orders" element={<AdminOrders />} />
             </Route>
           </Routes>
-        </main>
-      </div>
+        </Box>
+      </Box>
     </BrowserRouter>
   );
 };

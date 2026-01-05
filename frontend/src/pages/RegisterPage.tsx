@@ -1,7 +1,24 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Stack,
+    TextField,
+    Button,
+    Paper,
+    Link,
+    Alert,
+    CircularProgress,
+    Fade,
+    IconButton,
+    InputAdornment
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
 import { register as registerUser, clearError } from '../store/slices/authSlice';
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 
 interface RegisterForm {
     name: string;
@@ -13,6 +30,7 @@ interface RegisterForm {
 export const RegisterPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
     const { loading, error } = useAppSelector((state) => state.auth);
 
     const {
@@ -39,104 +57,210 @@ export const RegisterPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12">
-            <div className="glass-card p-8 w-full max-w-md animate-fade-in">
-                <div className="text-center mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2">
-                        <span className="text-3xl">💊</span>
-                        <span className="text-2xl font-bold gradient-text">Supplai</span>
-                    </Link>
-                    <h1 className="text-2xl font-bold mt-6">Kayıt Ol</h1>
-                    <p className="text-[var(--text-muted)] mt-2">Yeni hesap oluşturun</p>
-                </div>
+        <Box
+            sx={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'background.default',
+                pt: 12,
+                pb: 8
+            }}
+        >
+            <Container maxWidth="xs">
+                <Fade in timeout={800}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: { xs: 4, sm: 6 },
+                            borderRadius: 10,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            overflow: 'hidden',
+                            boxShadow: '0 40px 80px rgba(0,0,0,0.06)',
+                            bgcolor: 'white'
+                        }}
+                    >
+                        <Box sx={{ mb: 6, textAlign: 'center' }}>
+                            <Box
+                                component={RouterLink}
+                                to="/"
+                                sx={{
+                                    textDecoration: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 1.5,
+                                    mb: 4
+                                }}
+                            >
+                                <Typography sx={{ fontSize: '2rem' }}>💊</Typography>
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontWeight: 900,
+                                        color: 'primary.main',
+                                        letterSpacing: '-0.02em'
+                                    }}
+                                >
+                                    Supplai
+                                </Typography>
+                            </Box>
+                            <Typography variant="h3" sx={{ mb: 1.5 }}>Aramıza Katılın</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                                Sağlıklı yaşam yolculuğunuza bugün başlayın
+                            </Typography>
+                        </Box>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {error && (
-                        <div className="p-4 rounded-lg bg-[var(--error)]/20 border border-[var(--error)]/50 text-[var(--error)]">
-                            {error}
-                        </div>
-                    )}
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Stack spacing={2.5}>
+                                {error && (
+                                    <Alert severity="error" sx={{ borderRadius: 3, fontWeight: 700 }}>
+                                        {error}
+                                    </Alert>
+                                )}
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Ad Soyad</label>
-                        <input
-                            type="text"
-                            {...register('name', { required: 'Ad soyad gerekli' })}
-                            className="input"
-                            placeholder="John Doe"
-                        />
-                        {errors.name && (
-                            <p className="text-[var(--error)] text-sm mt-1">{errors.name.message}</p>
-                        )}
-                    </div>
+                                <TextField
+                                    fullWidth
+                                    label="Ad Soyad"
+                                    placeholder="John Doe"
+                                    {...register('name', { required: 'Ad soyad gerekli' })}
+                                    error={!!errors.name}
+                                    helperText={errors.name?.message}
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <User size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            ),
+                                            sx: { borderRadius: 4 }
+                                        }
+                                    }}
+                                />
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Email</label>
-                        <input
-                            type="email"
-                            {...register('email', {
-                                required: 'Email gerekli',
-                                pattern: {
-                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                    message: 'Geçersiz email adresi',
-                                },
-                            })}
-                            className="input"
-                            placeholder="ornek@email.com"
-                        />
-                        {errors.email && (
-                            <p className="text-[var(--error)] text-sm mt-1">{errors.email.message}</p>
-                        )}
-                    </div>
+                                <TextField
+                                    fullWidth
+                                    label="Email Adresi"
+                                    placeholder="ornek@email.com"
+                                    {...register('email', {
+                                        required: 'Email gerekli',
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: 'Geçersiz email adresi',
+                                        },
+                                    })}
+                                    error={!!errors.email}
+                                    helperText={errors.email?.message}
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Mail size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            ),
+                                            sx: { borderRadius: 4 }
+                                        }
+                                    }}
+                                />
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Şifre</label>
-                        <input
-                            type="password"
-                            {...register('password', {
-                                required: 'Şifre gerekli',
-                                minLength: { value: 6, message: 'Şifre en az 6 karakter olmalı' },
-                            })}
-                            className="input"
-                            placeholder="••••••••"
-                        />
-                        {errors.password && (
-                            <p className="text-[var(--error)] text-sm mt-1">{errors.password.message}</p>
-                        )}
-                    </div>
+                                <TextField
+                                    fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    label="Şifre"
+                                    placeholder="••••••••"
+                                    {...register('password', {
+                                        required: 'Şifre gerekli',
+                                        minLength: { value: 6, message: 'Şifre en az 6 karakter olmalı' },
+                                    })}
+                                    error={!!errors.password}
+                                    helperText={errors.password?.message}
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        edge="end"
+                                                        size="small"
+                                                    >
+                                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                            sx: { borderRadius: 4 }
+                                        }
+                                    }}
+                                />
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Şifre Tekrar</label>
-                        <input
-                            type="password"
-                            {...register('confirmPassword', {
-                                required: 'Şifre tekrarı gerekli',
-                                validate: (value) => value === password || 'Şifreler eşleşmiyor',
-                            })}
-                            className="input"
-                            placeholder="••••••••"
-                        />
-                        {errors.confirmPassword && (
-                            <p className="text-[var(--error)] text-sm mt-1">{errors.confirmPassword.message}</p>
-                        )}
-                    </div>
+                                <TextField
+                                    fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    label="Şifre Tekrar"
+                                    placeholder="••••••••"
+                                    {...register('confirmPassword', {
+                                        required: 'Şifre tekrarı gerekli',
+                                        validate: (value) => value === password || 'Şifreler eşleşmiyor',
+                                    })}
+                                    error={!!errors.confirmPassword}
+                                    helperText={errors.confirmPassword?.message}
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            ),
+                                            sx: { borderRadius: 4 }
+                                        }
+                                    }}
+                                />
 
-                    <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-4">
-                        {loading ? (
-                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
-                        ) : (
-                            'Kayıt Ol'
-                        )}
-                    </button>
-                </form>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    size="large"
+                                    type="submit"
+                                    disabled={loading}
+                                    endIcon={!loading && <ArrowRight size={20} />}
+                                    sx={{
+                                        py: 2,
+                                        mt: 1,
+                                        borderRadius: 4,
+                                        fontSize: '1.1rem',
+                                        boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Kayıt Ol'}
+                                </Button>
+                            </Stack>
+                        </form>
 
-                <p className="text-center text-[var(--text-muted)] mt-6">
-                    Zaten hesabınız var mı?{' '}
-                    <Link to="/login" className="text-[var(--primary)] hover:underline">
-                        Giriş Yap
-                    </Link>
-                </p>
-            </div>
-        </div>
+                        <Box sx={{ mt: 6, textAlign: 'center' }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                                Zaten hesabınız var mı?{' '}
+                                <Link
+                                    component={RouterLink}
+                                    to="/login"
+                                    sx={{
+                                        color: 'primary.main',
+                                        fontWeight: 900,
+                                        textDecoration: 'none',
+                                        '&:hover': { textDecoration: 'underline' }
+                                    }}
+                                >
+                                    Giriş Yap
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Fade>
+            </Container>
+        </Box>
     );
 };

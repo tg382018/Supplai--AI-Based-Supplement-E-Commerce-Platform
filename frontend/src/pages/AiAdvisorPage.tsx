@@ -1,25 +1,46 @@
-import { AiChat } from '../components';
+import { Box, Container, Typography, Stack, Fade, Chip } from '@mui/material';
+import { AiChat, Footer } from '../components';
 import { Sparkles } from 'lucide-react';
 
 export const AiAdvisorPage = () => {
     return (
-        <div className="pt-12 pb-24 min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-12 text-center animate-fade-up">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-primary text-sm font-bold mb-4 border border-emerald-100">
-                        <Sparkles className="w-4 h-4" />
-                        <span>Kişiselleştirilmiş Öneriler</span>
-                    </div>
-                    <h1 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">AI Supplement Asistanı</h1>
-                    <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-                        Fiziksel verilerinizi ve hedeflerinizi paylaşın, saniyeler içinde size özel supplement kürünü oluşturalım.
-                    </p>
-                </div>
+        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
+            <Container maxWidth="lg">
+                <Box sx={{ mb: 10, textAlign: 'center' }}>
+                    <Fade in timeout={800}>
+                        <Box>
+                            <Chip
+                                icon={<Sparkles size={16} />}
+                                label="Kişiselleştirilmiş Öneriler"
+                                color="primary"
+                                variant="outlined"
+                                sx={{
+                                    mb: 4,
+                                    fontWeight: 800,
+                                    borderRadius: 10,
+                                    bgcolor: 'emerald.50',
+                                    borderColor: 'emerald.100',
+                                    color: 'primary.main',
+                                    py: 2
+                                }}
+                            />
+                            <Typography variant="h1" sx={{ mb: 3, letterSpacing: '-0.02em' }}>
+                                AI Supplement Asistanı
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', fontSize: '1.25rem', lineHeight: 1.8 }}>
+                                Fiziksel verilerinizi ve hedeflerinizi paylaşın, saniyeler içinde size özel supplement kürünü oluşturalım.
+                            </Typography>
+                        </Box>
+                    </Fade>
+                </Box>
 
-                <div className="animate-fade-up" style={{ animationDelay: '0.2s' }}>
-                    <AiChat />
-                </div>
-            </div>
-        </div>
+                <Fade in timeout={1200}>
+                    <Box>
+                        <AiChat />
+                    </Box>
+                </Fade>
+            </Container>
+            <Footer />
+        </Box>
     );
 };

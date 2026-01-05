@@ -1,9 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+    IconButton,
+    Box,
+    Stack,
+    Typography,
+    MenuItem,
+    Grid,
+    Avatar,
+    CircularProgress,
+    InputAdornment,
+    Divider
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { addProduct, updateProduct, fetchCategories } from '../../store/slices/productsSlice';
 import { storageService } from '../../services';
 import type { Product } from '../../types';
+import { X, Upload, Tag, Package, Box as BoxIcon, Info, FlaskConical, History } from 'lucide-react';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -33,6 +52,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
     const {
         register,
         handleSubmit,
+        formState: { errors },
     } = useForm<ProductFormData>({
         defaultValues: {
             name: product?.name || '',
@@ -92,161 +112,220 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900 z-10">
-                    <h2 className="text-xl font-bold text-white">
-                        {product ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}
-                    </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-                        ✖
-                    </button>
-                </div>
+        <Dialog
+            open={isOpen}
+            onClose={onClose}
+            maxWidth="md"
+            fullWidth
+            PaperProps={{
+                sx: {
+                    borderRadius: 8,
+                    boxShadow: '0 40px 80px rgba(0,0,0,0.1)',
+                    backgroundImage: 'none'
+                }
+            }}
+        >
+            <DialogTitle sx={{ p: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h5" sx={{ fontWeight: 900 }}>
+                    {product ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}
+                </Typography>
+                <IconButton onClick={onClose} size="small" sx={{ color: 'text.disabled' }}>
+                    <X size={24} />
+                </IconButton>
+            </DialogTitle>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Ürün Adı</label>
-                                <input
-                                    {...register('name', { required: 'Ad gerekli' })}
-                                    className="input w-full"
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                <DialogContent sx={{ p: 4, py: 0 }}>
+                    <Grid container spacing={4}>
+                        <Grid size={{ xs: 12, md: 7 }}>
+                            <Stack spacing={3}>
+                                <TextField
+                                    fullWidth
+                                    label="Ürün Adı"
                                     placeholder="Ürün adı"
+                                    {...register('name', { required: 'Ad gerekli' })}
+                                    error={!!errors.name}
+                                    helperText={errors.name?.message}
+                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
                                 />
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Kategori</label>
-                                <select
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Kategori"
                                     {...register('categoryId', { required: 'Kategori seçin' })}
-                                    className="input w-full bg-slate-800"
+                                    error={!!errors.categoryId}
+                                    helperText={errors.categoryId?.message}
+                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
                                 >
-                                    <option value="">Seçiniz</option>
+                                    <MenuItem value="">Seçiniz</MenuItem>
                                     {categories.map((c) => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                        <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
                                     ))}
-                                </select>
-                            </div>
+                                </TextField>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Fiyat ($)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        {...register('price', { required: 'Fiyat gerekli' })}
-                                        className="input w-full"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Stok</label>
-                                    <input
-                                        type="number"
-                                        {...register('stock', { required: 'Stok gerekli' })}
-                                        className="input w-full"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                                <Grid container spacing={2}>
+                                    <Grid size={{ xs: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Fiyat (₺)"
+                                            {...register('price', { required: 'Fiyat gerekli' })}
+                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Stok"
+                                            {...register('stock', { required: 'Stok gerekli' })}
+                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Stack>
+                        </Grid>
 
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Ürün Görseli</label>
-                            <div className="relative group aspect-square rounded-xl border-2 border-dashed border-slate-800 flex items-center justify-center overflow-hidden bg-slate-800/20">
+                        <Grid size={{ xs: 12, md: 5 }}>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    aspectRatio: '1',
+                                    borderRadius: 6,
+                                    border: '2px dashed',
+                                    borderColor: 'divider',
+                                    bgcolor: 'grey.50',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    '&:hover .upload-overlay': { opacity: 1 }
+                                }}
+                            >
                                 {previewUrl ? (
                                     <>
-                                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <p className="text-white text-sm">Görseli Değiştir</p>
-                                        </div>
+                                        <Box component="img" src={previewUrl} alt="Preview" sx={{ width: '100%', height: '100%', objectFit: 'contain', p: 4 }} />
+                                        <Box className="upload-overlay" sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.4)', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', cursor: 'pointer' }}>
+                                            <Upload size={32} />
+                                            <Typography variant="caption" sx={{ mt: 1, fontWeight: 800 }}>Görseli Değiştir</Typography>
+                                        </Box>
                                     </>
                                 ) : (
-                                    <div className="text-center p-4">
-                                        <p className="text-gray-500 text-sm">Görsel Seç</p>
-                                    </div>
+                                    <Stack spacing={1} alignItems="center" sx={{ color: 'text.disabled' }}>
+                                        <Upload size={48} />
+                                        <Typography variant="caption" sx={{ fontWeight: 800 }}>Görsel Seç</Typography>
+                                    </Stack>
                                 )}
                                 <input
                                     type="file"
                                     onChange={handleImageChange}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
                                     accept="image/*"
                                 />
-                            </div>
-                        </div>
-                    </div>
+                            </Box>
+                        </Grid>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Açıklama</label>
-                            <textarea
-                                {...register('description')}
-                                className="input w-full h-24"
-                                placeholder="Ürün açıklaması..."
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Tags (Virgülle ayırın)</label>
-                            <input
-                                {...register('tags')}
-                                className="input w-full"
-                                placeholder="enerji, kas, whey"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Faydalar</label>
-                                <textarea
-                                    {...register('benefits')}
-                                    className="input w-full h-20"
-                                    placeholder="Kas yapımı, Hızlı emilim..."
+                        <Grid size={{ xs: 12 }}>
+                            <Stack spacing={3}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    label="Açıklama"
+                                    placeholder="Ürün açıklaması..."
+                                    {...register('description')}
+                                    slotProps={{ input: { sx: { borderRadius: 3 } } }}
                                 />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">İçerik</label>
-                                <textarea
-                                    {...register('ingredients')}
-                                    className="input w-full h-20"
-                                    placeholder="Protein, Amino asit..."
+
+                                <TextField
+                                    fullWidth
+                                    label="Etiketler (Virgülle ayırın)"
+                                    placeholder="enerji, kas, whey"
+                                    {...register('tags')}
+                                    slotProps={{
+                                        input: {
+                                            borderRadius: 3,
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Tag size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
                                 />
-                            </div>
-                        </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Kullanım Talimatı</label>
-                            <input
-                                {...register('usage')}
-                                className="input w-full"
-                                placeholder="Günde 1 ölçek..."
-                            />
-                        </div>
-                    </div>
+                                <Grid container spacing={3}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={2}
+                                            label="Faydalar"
+                                            placeholder="Kas yapımı, Hızlı emilim..."
+                                            {...register('benefits')}
+                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={2}
+                                            label="İçerik"
+                                            placeholder="Protein, Amino asit..."
+                                            {...register('ingredients')}
+                                            slotProps={{ input: { sx: { borderRadius: 3 } } }}
+                                        />
+                                    </Grid>
+                                </Grid>
 
-                    <div className="pt-4 border-t border-slate-800 flex gap-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 px-4 py-3 rounded-xl bg-slate-800 text-white font-semibold hover:bg-slate-700 transition-colors"
-                        >
-                            Vazgeç
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isUploading}
-                            className="flex-[2] btn-primary px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
-                        >
-                            {isUploading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            ) : null}
-                            {product ? 'Güncelle' : 'Kaydet'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                                <TextField
+                                    fullWidth
+                                    label="Kullanım Talimatı"
+                                    placeholder="Günde 1 ölçek..."
+                                    {...register('usage')}
+                                    slotProps={{
+                                        input: {
+                                            borderRadius: 3,
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <History size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
+                                />
+                            </Stack>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+
+                <DialogActions sx={{ p: 4, pt: 3 }}>
+                    <Button
+                        onClick={onClose}
+                        sx={{ fontWeight: 800, color: 'text.secondary', px: 3 }}
+                    >
+                        Vazgeç
+                    </Button>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isUploading}
+                        sx={{
+                            px: 6,
+                            py: 1.5,
+                            borderRadius: 3,
+                            boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)'
+                        }}
+                    >
+                        {isUploading ? <CircularProgress size={24} color="inherit" /> : (product ? 'Güncelle' : 'Kaydet')}
+                    </Button>
+                </DialogActions>
+            </Box>
+        </Dialog>
     );
 };
 

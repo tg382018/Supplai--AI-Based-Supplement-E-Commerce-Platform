@@ -1,6 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Typography,
+    Button,
+    Paper,
+    Grid,
+    Stack,
+    TextField,
+    IconButton,
+    Avatar,
+    Chip,
+    CircularProgress,
+    Fade,
+    Tooltip,
+    InputAdornment
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { fetchCategories, addCategory, updateCategory, deleteCategory } from '../../store/slices/productsSlice';
+import { Plus, Pencil, Trash2, Tag, Save, X, Package, Layers } from 'lucide-react';
 
 const AdminCategories: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -40,89 +57,186 @@ const AdminCategories: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-white">Kategori Yönetimi</h1>
-                <button
+        <Box sx={{ animate: 'fade-in 0.5s ease' }}>
+            <Box sx={{ mb: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>Kategori Yönetimi</Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+                        Ürün kategorilerini oluşturun, düzenleyin ve ürün dağılımını kontrol edin.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    color={isAdding ? "inherit" : "primary"}
+                    startIcon={isAdding ? <X size={20} /> : <Plus size={20} />}
                     onClick={() => {
                         setIsAdding(!isAdding);
                         setEditingId(null);
                     }}
-                    className="btn-primary px-4 py-2 rounded-lg flex items-center gap-2"
+                    sx={{
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 3,
+                        boxShadow: isAdding ? 'none' : '0 10px 20px rgba(16, 185, 129, 0.2)',
+                        fontWeight: 800,
+                        textTransform: 'none'
+                    }}
                 >
-                    <span>➕</span> {isAdding ? 'Vazgeç' : 'Yeni Kategori'}
-                </button>
-            </div>
+                    {isAdding ? 'Vazgeç' : 'Yeni Kategori'}
+                </Button>
+            </Box>
 
             {isAdding && (
-                <div className="glass-card p-6 flex gap-4 animate-fade-in">
-                    <input
-                        type="text"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        placeholder="Kategori adı..."
-                        className="input flex-1"
-                        onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-                    />
-                    <button
-                        onClick={handleAdd}
-                        className="btn-primary px-6 rounded-lg font-semibold"
+                <Fade in timeout={400}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            mb: 6,
+                            borderRadius: 6,
+                            border: '1px solid',
+                            borderColor: 'primary.light',
+                            bgcolor: 'emerald.50/50',
+                            display: 'flex',
+                            gap: 2,
+                            alignItems: 'center'
+                        }}
                     >
-                        Ekle
-                    </button>
-                </div>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            placeholder="Kategori adı ekleyin (örn: Protein Tozu, Vitaminler...)"
+                            onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+                            slotProps={{
+                                input: {
+                                    sx: { borderRadius: 3, bgcolor: 'white' },
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Tag size={18} color="#10b981" />
+                                        </InputAdornment>
+                                    )
+                                }
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            onClick={handleAdd}
+                            disabled={!newName.trim()}
+                            sx={{ borderRadius: 3, px: 4, fontWeight: 800 }}
+                        >
+                            Ekle
+                        </Button>
+                    </Paper>
+                </Fade>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.map((category) => (
-                    <div key={category.id} className="glass-card p-6 space-y-4 group">
-                        {editingId === category.id ? (
-                            <div className="flex flex-col gap-2">
-                                <input
-                                    type="text"
-                                    value={editName}
-                                    onChange={(e) => setEditName(e.target.value)}
-                                    className="input text-sm py-2"
-                                    autoFocus
-                                />
-                                <div className="flex gap-2 text-xs">
-                                    <button onClick={handleUpdate} className="text-primary font-bold">Kaydet</button>
-                                    <button onClick={() => setEditingId(null)} className="text-gray-400">Vazgeç</button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white">{category.name}</h3>
-                                    <p className="text-sm text-gray-400">Ürün Sayısı: {category._count?.products || 0}</p>
-                                </div>
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button
-                                        onClick={() => handleEdit(category.id, category.name)}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-gray-400 hover:text-white"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(category.id)}
-                                        className="p-2 hover:bg-red-500/10 rounded-lg text-red-500"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+            <Grid container spacing={4}>
+                {categories.map((category, index) => (
+                    <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={category.id}>
+                        <Fade in timeout={400 + (index * 100)}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 4,
+                                    borderRadius: 6,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    transition: 'all 0.3s ease',
+                                    position: 'relative',
+                                    '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 20px 40px rgba(0,0,0,0.04)', borderColor: 'primary.light' }
+                                }}
+                            >
+                                {editingId === category.id ? (
+                                    <Stack spacing={2}>
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            autoFocus
+                                            slotProps={{ input: { sx: { borderRadius: 2 } } }}
+                                        />
+                                        <Stack direction="row" spacing={1}>
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={handleUpdate}
+                                                startIcon={<Save size={14} />}
+                                                sx={{ borderRadius: 2, fontWeight: 800 }}
+                                            >
+                                                Kaydet
+                                            </Button>
+                                            <Button
+                                                variant="text"
+                                                size="small"
+                                                color="inherit"
+                                                onClick={() => setEditingId(null)}
+                                                sx={{ borderRadius: 2, fontWeight: 800 }}
+                                            >
+                                                Vazgeç
+                                            </Button>
+                                        </Stack>
+                                    </Stack>
+                                ) : (
+                                    <Box>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
+                                            <Avatar sx={{ bgcolor: 'emerald.50', color: 'primary.main', borderRadius: 3 }}>
+                                                <Layers size={22} />
+                                            </Avatar>
+                                            <Stack direction="row" spacing={1}>
+                                                <Tooltip title="Düzenle">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleEdit(category.id, category.name)}
+                                                        sx={{ color: 'text.disabled', '&:hover': { color: 'primary.main', bgcolor: 'emerald.50' } }}
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Sil">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDelete(category.id)}
+                                                        sx={{ color: 'text.disabled', '&:hover': { color: 'error.main', bgcolor: 'error.50' } }}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Stack>
+                                        </Stack>
+                                        <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>{category.name}</Typography>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <Package size={14} color="#94a3b8" />
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 800 }}>
+                                                {category._count?.products || 0} ÜRÜN MEVCUT
+                                            </Typography>
+                                        </Stack>
+                                    </Box>
+                                )}
+                            </Paper>
+                        </Fade>
+                    </Grid>
                 ))}
-            </div>
+            </Grid>
 
-            {loading && <div className="text-center text-gray-400">Yükleniyor...</div>}
-            {!loading && categories.length === 0 && (
-                <div className="text-center py-12 text-gray-500 italic">
-                    Henüz kategori bulunmuyor.
-                </div>
+            {loading && (
+                <Box sx={{ p: 8, textAlign: 'center' }}>
+                    <CircularProgress size={32} thickness={4} />
+                    <Typography variant="caption" sx={{ display: 'block', mt: 2, fontWeight: 900, color: 'text.secondary' }}>YÜKLENİYOR...</Typography>
+                </Box>
             )}
-        </div>
+            {!loading && categories.length === 0 && (
+                <Box sx={{ p: 12, textAlign: 'center' }}>
+                    <Avatar sx={{ width: 80, height: 80, bgcolor: 'grey.50', mx: 'auto', mb: 3 }}>
+                        <Tag size={40} color="#cbd5e1" />
+                    </Avatar>
+                    <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.secondary' }}>Kategori Bulunamadı</Typography>
+                    <Typography variant="body2" color="text.disabled">Henüz herhangi bir ürün kategorisi oluşturmadınız.</Typography>
+                </Box>
+            )}
+        </Box>
     );
 };
 
