@@ -68,6 +68,78 @@ export const fetchCategories = createAsyncThunk(
     }
 );
 
+export const addProduct = createAsyncThunk(
+    'products/addProduct',
+    async (data: Partial<Product>, { rejectWithValue }) => {
+        try {
+            const product = await productService.createProduct(data);
+            return product;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to add product');
+        }
+    }
+);
+
+export const updateProduct = createAsyncThunk(
+    'products/updateProduct',
+    async ({ id, data }: { id: string; data: Partial<Product> }, { rejectWithValue }) => {
+        try {
+            const product = await productService.updateProduct(id, data);
+            return product;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to update product');
+        }
+    }
+);
+
+export const deleteProduct = createAsyncThunk(
+    'products/deleteProduct',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            await productService.deleteProduct(id);
+            return id;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to delete product');
+        }
+    }
+);
+
+export const addCategory = createAsyncThunk(
+    'products/addCategory',
+    async (data: Partial<Category>, { rejectWithValue }) => {
+        try {
+            const category = await productService.createCategory(data);
+            return category;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to add category');
+        }
+    }
+);
+
+export const updateCategory = createAsyncThunk(
+    'products/updateCategory',
+    async ({ id, data }: { id: string; data: Partial<Category> }, { rejectWithValue }) => {
+        try {
+            const category = await productService.updateCategory(id, data);
+            return category;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to update category');
+        }
+    }
+);
+
+export const deleteCategory = createAsyncThunk(
+    'products/deleteCategory',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            await productService.deleteCategory(id);
+            return id;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to delete category');
+        }
+    }
+);
+
 const productsSlice = createSlice({
     name: 'products',
     initialState,
@@ -106,6 +178,30 @@ const productsSlice = createSlice({
             })
             .addCase(fetchCategories.fulfilled, (state, action) => {
                 state.categories = action.payload;
+            })
+            .addCase(addProduct.fulfilled, (state, action) => {
+                state.products.unshift(action.payload);
+            })
+            .addCase(updateProduct.fulfilled, (state, action) => {
+                const index = state.products.findIndex((p) => p.id === action.payload.id);
+                if (index !== -1) {
+                    state.products[index] = action.payload;
+                }
+            })
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.products = state.products.filter((p) => p.id !== action.payload);
+            })
+            .addCase(addCategory.fulfilled, (state, action) => {
+                state.categories.push(action.payload);
+            })
+            .addCase(updateCategory.fulfilled, (state, action) => {
+                const index = state.categories.findIndex((c) => c.id === action.payload.id);
+                if (index !== -1) {
+                    state.categories[index] = action.payload;
+                }
+            })
+            .addCase(deleteCategory.fulfilled, (state, action) => {
+                state.categories = state.categories.filter((c) => c.id !== action.payload);
             });
     },
 });

@@ -4,27 +4,37 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
-    private transporter: nodemailer.Transporter;
-    private readonly logger = new Logger(MailService.name);
+  private transporter: nodemailer.Transporter;
+  private readonly logger = new Logger(MailService.name);
 
-    constructor(private configService: ConfigService) {
-        this.transporter = nodemailer.createTransport({
-            host: this.configService.get<string>('mail.host') || 'smtp.ethereal.email',
-            port: this.configService.get<number>('mail.port') || 587,
-            secure: this.configService.get<boolean>('mail.secure') || false,
-            auth: {
-                user: this.configService.get<string>('mail.user'),
-                pass: this.configService.get<string>('mail.pass'),
-            },
-        });
+  constructor(private configService: ConfigService) {
+    const user = this.configService.get<string>('mail.user');
+    const pass = this.configService.get<string>('mail.pass');
+
+    const config: any = {
+      host: this.configService.get<string>('mail.host') || 'smtp.ethereal.email',
+      port: this.configService.get<number>('mail.port') || 587,
+      secure: this.configService.get<boolean>('mail.secure') || false,
+    };
+
+    if (user && pass) {
+      config.auth = { user, pass };
     }
 
-    async sendVerificationEmail(email: string, code: string) {
-        const mailOptions = {
-            from: this.configService.get<string>('mail.from') || '"Supplai Support" <support@supplai.com>',
-            to: email,
-            subject: 'Supplai Kayıt Doğrulama Kodunuz',
-            html: `
+    this.transporter = nodemailer.createTransport(config);
+  }
+
+  async sendVerificationEmail(email: string, code: string) {
+    // Dev note: Always log the code to console so development is not blocked by mail issues
+    this.logger.log(`==========================================`);
+    this.logger.log(`VERIFICATION CODE FOR ${email}: ${code}`);
+    this.logger.log(`==========================================`);
+
+    const mailOptions = {
+      from: this.configService.get<string>('mail.from') || '"Supplai Support" <support@supplai.com>',
+      to: email,
+      subject: 'Supplai Kayıt Doğrulama Kodunuz',
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
           <h2 style="color: #4a90e2; text-align: center;">Supplai'ye Hoş Geldiniz!</h2>
           <p>Kayıt işlemini tamamlamak için lütfen aşağıdaki doğrulama kodunu kullanın:</p>
@@ -38,14 +48,17 @@ export class MailService {
           </p>
         </div>
       `,
-        };
+    };
 
-        try {
-            await this.transporter.sendMail(mailOptions);
-            this.logger.log(`Verification email sent to ${email}`);
-        } catch (error) {
-            this.logger.error(`Failed to send email to ${email}`, error);
-            // In production, you might want to throw an error here
-        }
+    try {
+      if (this.configService.get('mail.user')) {
+        await this.transporter.sendMail(mailOptions);
+        this.logger.log(`Verification email sent to ${email}`);
+      } else {
+        this.logger.warn(`Email not sent: SMTP credentials (MAIL_USER/MAIL_PASS) are missing in .env`);
+      }
+    } catch (error: any) {
+      this.logger.error(`Failed to send email to ${email}: ${error.message}`);
     }
+  }
 }

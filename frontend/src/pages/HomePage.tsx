@@ -14,7 +14,7 @@ export const HomePage = () => {
     }, [dispatch]);
 
     return (
-        <div className="pt-20">
+        <div>
             {/* Hero Section */}
             <section className="relative min-h-[80vh] flex items-center">
                 <div className="absolute inset-0 overflow-hidden">

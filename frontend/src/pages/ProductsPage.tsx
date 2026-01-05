@@ -45,7 +45,7 @@ export const ProductsPage = () => {
     };
 
     return (
-        <div className="pt-24 pb-12 min-h-screen">
+        <div className="pt-8 pb-12 min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-4xl font-bold mb-8">Ürünler</h1>
 
@@ -71,8 +71,8 @@ export const ProductsPage = () => {
                             <button
                                 onClick={() => handleCategoryChange(null)}
                                 className={`px-4 py-2 rounded-lg transition-colors ${!selectedCategory
-                                        ? 'bg-[var(--primary)] text-white'
-                                        : 'bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-light)]'
+                                    ? 'bg-[var(--primary)] text-white'
+                                    : 'bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-light)]'
                                     }`}
                             >
                                 Tümü
@@ -82,8 +82,8 @@ export const ProductsPage = () => {
                                     key={category.id}
                                     onClick={() => handleCategoryChange(category.id)}
                                     className={`px-4 py-2 rounded-lg transition-colors ${selectedCategory === category.id
-                                            ? 'bg-[var(--primary)] text-white'
-                                            : 'bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-light)]'
+                                        ? 'bg-[var(--primary)] text-white'
+                                        : 'bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-light)]'
                                         }`}
                                 >
                                     {category.name}
