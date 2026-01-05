@@ -6,7 +6,7 @@ import {
     Stack,
     Button
 } from '@mui/material';
-import { ShoppingBag } from 'lucide-react';
+// import { ShoppingBag } from 'lucide-react';
 
 export const Footer = () => {
     return (
@@ -23,10 +23,12 @@ export const Footer = () => {
                         to="/"
                         sx={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', color: 'inherit' }}
                     >
-                        <Box sx={{ bgcolor: 'primary.main', p: 1, borderRadius: 1.5, display: 'flex' }}>
-                            <ShoppingBag size={24} color="white" />
-                        </Box>
-                        <Typography variant="h5" sx={{ fontWeight: 900 }}>Supp<Box component="span" sx={{ color: 'primary.main' }}>lai</Box></Typography>
+                        <Box
+                            component="img"
+                            src="/logosupplai.png"
+                            alt="Supplai"
+                            sx={{ height: 50 }}
+                        />
                     </Box>
 
                     <Stack direction="row" spacing={6}>

@@ -7,6 +7,7 @@ import { store } from './store';
 import { useAppDispatch } from './hooks/useRedux';
 import { fetchUser } from './store/slices/authSlice';
 import { Navbar } from './components';
+import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
@@ -37,6 +38,7 @@ const AppContent = () => {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
         <Navbar />
