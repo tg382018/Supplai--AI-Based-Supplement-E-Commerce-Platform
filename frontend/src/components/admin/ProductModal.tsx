@@ -68,7 +68,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product })
     });
 
     useEffect(() => {
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({}));
     }, [dispatch]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

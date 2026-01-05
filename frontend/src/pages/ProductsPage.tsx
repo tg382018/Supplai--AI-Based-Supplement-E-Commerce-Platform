@@ -13,25 +13,61 @@ import {
     CircularProgress,
     Paper,
     Fade,
-    Avatar
+    Avatar,
+    Slider,
+    Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Divider,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { fetchProducts, fetchCategories, setSearch, setCategory, setPage } from '../store/slices';
+import {
+    fetchProducts,
+    fetchCategories,
+    fetchFilterOptions,
+    setSearch,
+    setCategory,
+    setTags,
+    setBenefits,
+    setPriceRange,
+    setSortBy,
+    setPage,
+    resetFilters
+} from '../store/slices';
 import { ProductCard, Footer } from '../components';
 import {
     Search as SearchIcon,
-    Filter,
     LayoutGrid,
     RefreshCw,
-    ShoppingBag
+    ShoppingBag,
+    Tag,
+    Beaker,
+    Coins,
+    ArrowUpDown
 } from 'lucide-react';
 
 export const ProductsPage = () => {
     const dispatch = useAppDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { products, categories, loading, search, selectedCategory, currentPage, totalPages } = useAppSelector(
-        (state) => state.products
-    );
+    const {
+        products,
+        categories,
+        filterOptions,
+        loading,
+        search,
+        selectedCategory,
+        selectedTags,
+        selectedBenefits,
+        priceRange,
+        sortBy,
+        currentPage,
+        totalPages
+    } = useAppSelector((state) => state.products);
+
     const [searchInput, setSearchInput] = useState(search);
 
     useEffect(() => {
@@ -39,7 +75,8 @@ export const ProductsPage = () => {
         if (category) {
             dispatch(setCategory(category));
         }
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({}));
+        dispatch(fetchFilterOptions());
     }, [dispatch, searchParams]);
 
     useEffect(() => {
@@ -47,10 +84,15 @@ export const ProductsPage = () => {
             fetchProducts({
                 search,
                 categoryId: selectedCategory || undefined,
+                tags: selectedTags.length > 0 ? selectedTags : undefined,
+                benefits: selectedBenefits.length > 0 ? selectedBenefits : undefined,
+                minPrice: priceRange[0],
+                maxPrice: priceRange[1],
+                sortBy,
                 page: currentPage,
             })
         );
-    }, [dispatch, search, selectedCategory, currentPage]);
+    }, [dispatch, search, selectedCategory, selectedTags, selectedBenefits, priceRange, sortBy, currentPage]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,25 +108,185 @@ export const ProductsPage = () => {
         }
     };
 
+    const handleTagToggle = (tag: string) => {
+        const newTags = selectedTags.includes(tag)
+            ? selectedTags.filter(t => t !== tag)
+            : [...selectedTags, tag];
+        dispatch(setTags(newTags));
+    };
+
+    const handleBenefitToggle = (benefit: string) => {
+        const newBenefits = selectedBenefits.includes(benefit)
+            ? selectedBenefits.filter(b => b !== benefit)
+            : [...selectedBenefits, benefit];
+        dispatch(setBenefits(newBenefits));
+    };
+
+    const handlePriceChange = (_event: Event, newValue: number | number[]) => {
+        dispatch(setPriceRange(newValue as [number, number]));
+    };
+
+    const handleSortChange = (event: any) => {
+        dispatch(setSortBy(event.target.value));
+    };
+
     const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         dispatch(setPage(value));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const FilterSidebar = () => (
+        <Stack spacing={4}>
+            {/* Categories */}
+            <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                    <LayoutGrid size={18} color="#10b981" />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Kategoriler</Typography>
+                </Stack>
+                <Stack spacing={1}>
+                    <Button
+                        variant={!selectedCategory ? 'contained' : 'text'}
+                        fullWidth
+                        onClick={() => handleCategoryChange(null)}
+                        sx={{
+                            justifyContent: 'flex-start',
+                            borderRadius: 2,
+                            fontWeight: !selectedCategory ? 800 : 500,
+                            color: !selectedCategory ? 'white' : 'text.secondary',
+                            bgcolor: !selectedCategory ? 'primary.main' : 'transparent',
+                            '&:hover': { bgcolor: !selectedCategory ? 'primary.dark' : 'emerald.50' }
+                        }}
+                    >
+                        Tümü
+                    </Button>
+                    {categories.map((cat) => (
+                        <Button
+                            key={cat.id}
+                            variant={selectedCategory === cat.id ? 'contained' : 'text'}
+                            fullWidth
+                            onClick={() => handleCategoryChange(cat.id)}
+                            sx={{
+                                justifyContent: 'flex-start',
+                                borderRadius: 2,
+                                fontWeight: selectedCategory === cat.id ? 800 : 500,
+                                color: selectedCategory === cat.id ? 'white' : 'text.secondary',
+                                bgcolor: selectedCategory === cat.id ? 'primary.main' : 'transparent',
+                                '&:hover': { bgcolor: selectedCategory === cat.id ? 'primary.dark' : 'emerald.50' }
+                            }}
+                        >
+                            {cat.name}
+                        </Button>
+                    ))}
+                </Stack>
+            </Box>
+
+            <Divider />
+
+            {/* Price Range */}
+            <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+                    <Coins size={18} color="#10b981" />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Fiyat Aralığı</Typography>
+                </Stack>
+                <Box sx={{ px: 1 }}>
+                    <Slider
+                        value={priceRange}
+                        onChange={handlePriceChange}
+                        valueLabelDisplay="auto"
+                        min={filterOptions.priceRange.min}
+                        max={filterOptions.priceRange.max}
+                        sx={{
+                            color: 'primary.main',
+                            '& .MuiSlider-thumb': {
+                                width: 20,
+                                height: 20,
+                                bgcolor: 'white',
+                                border: '2px solid currentColor',
+                                '&:hover': { boxShadow: '0 0 0 8px rgba(16, 185, 129, 0.16)' },
+                            },
+                        }}
+                    />
+                    <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                            ₺{priceRange[0]}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                            ₺{priceRange[1]}
+                        </Typography>
+                    </Stack>
+                </Box>
+            </Box>
+
+            <Divider />
+
+            {/* Tags */}
+            <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                    <Tag size={18} color="#10b981" />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Etiketler</Typography>
+                </Stack>
+                <FormGroup>
+                    {filterOptions.tags.map((tag) => (
+                        <FormControlLabel
+                            key={tag}
+                            control={
+                                <Checkbox
+                                    size="small"
+                                    checked={selectedTags.includes(tag)}
+                                    onChange={() => handleTagToggle(tag)}
+                                />
+                            }
+                            label={<Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>{tag}</Typography>}
+                        />
+                    ))}
+                </FormGroup>
+            </Box>
+
+            <Divider />
+
+            {/* Benefits / Content */}
+            <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                    <Beaker size={18} color="#10b981" />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Faydalar & İçerik</Typography>
+                </Stack>
+                <FormGroup>
+                    {filterOptions.benefits.map((benefit) => (
+                        <FormControlLabel
+                            key={benefit}
+                            control={
+                                <Checkbox
+                                    size="small"
+                                    checked={selectedBenefits.includes(benefit)}
+                                    onChange={() => handleBenefitToggle(benefit)}
+                                />
+                            }
+                            label={<Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>{benefit}</Typography>}
+                        />
+                    ))}
+                </FormGroup>
+            </Box>
+
+            <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<RefreshCw size={18} />}
+                onClick={() => dispatch(resetFilters())}
+                sx={{ borderRadius: 3, py: 1.5, fontWeight: 800 }}
+            >
+                Filtreleri Temizle
+            </Button>
+        </Stack>
+    );
+
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 8 }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 <Fade in timeout={600}>
                     <Box>
-                        {/* Page Header */}
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            alignItems={{ md: 'flex-end' }}
-                            justifyContent="space-between"
-                            spacing={4}
-                            sx={{ mb: 8 }}
-                        >
-                            <Box sx={{ maxWidth: 600 }}>
+                        {/* Header & Search */}
+                        <Grid container spacing={4} sx={{ mb: 6 }} alignItems="flex-end">
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
                                     <Box sx={{ p: 1, bgcolor: 'emerald.50', borderRadius: 2, display: 'flex' }}>
                                         <ShoppingBag size={24} color="#10b981" />
@@ -93,204 +295,103 @@ export const ProductsPage = () => {
                                         Mağaza
                                     </Typography>
                                 </Stack>
-                                <Typography variant="h2" sx={{ mb: 2 }}>Tüm Ürünler</Typography>
-                                <Typography variant="h6" color="text.secondary">
-                                    Hangi hedefe ulaşmak istiyorsanız, ihtiyacınız olan en kaliteli supplementleri burada bulabilirsiniz.
+                                <Typography variant="h2" sx={{ mb: 1 }}>Supplement Dünyası</Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    En kaliteli ürünler, en iyi fiyatlarla Supplai'da.
                                 </Typography>
-                            </Box>
-
-                            {/* Search Bar */}
-                            <Box component="form" onSubmit={handleSearch} sx={{ width: { xs: '100%', md: 400 } }}>
-                                <TextField
-                                    fullWidth
-                                    placeholder="İstediğiniz ürünü arayın..."
-                                    value={searchInput}
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    variant="outlined"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon size={20} color="#94a3b8" />
-                                            </InputAdornment>
-                                        ),
-                                        sx: {
-                                            borderRadius: 4,
-                                            bgcolor: 'white',
-                                            '& fieldset': { borderColor: 'grey.100' },
-                                            '&:hover fieldset': { borderColor: 'primary.light' },
-                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                        }
-                                    }}
-                                />
-                            </Box>
-                        </Stack>
-
-                        {/* Filters */}
-                        <Stack
-                            direction={{ xs: 'column', lg: 'row' }}
-                            alignItems={{ lg: 'center' }}
-                            justifyContent="space-between"
-                            spacing={4}
-                            sx={{ mb: 8 }}
-                        >
-                            <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
-                                <Paper
-                                    sx={{
-                                        px: 2,
-                                        py: 1,
-                                        bgcolor: 'white',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 2.5,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 1
-                                    }}
-                                >
-                                    <Filter size={16} color="#94a3b8" />
-                                    <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.1em' }}>
-                                        FİLTRELE:
-                                    </Typography>
-                                </Paper>
-
-                                <Button
-                                    variant={!selectedCategory ? 'contained' : 'outlined'}
-                                    onClick={() => handleCategoryChange(null)}
-                                    sx={{
-                                        borderRadius: 2.5,
-                                        px: 3,
-                                        fontWeight: 800,
-                                        boxShadow: !selectedCategory ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
-                                    }}
-                                >
-                                    Tümü
-                                </Button>
-                                {categories.map((category) => (
-                                    <Button
-                                        key={category.id}
-                                        variant={selectedCategory === category.id ? 'contained' : 'outlined'}
-                                        onClick={() => handleCategoryChange(category.id)}
-                                        sx={{
-                                            borderRadius: 2.5,
-                                            px: 3,
-                                            fontWeight: 800,
-                                            boxShadow: selectedCategory === category.id ? '0 10px 15px -3px rgba(16, 185, 129, 0.2)' : 'none'
-                                        }}
-                                    >
-                                        {category.name}
-                                    </Button>
-                                ))}
-                            </Stack>
-
-                            <Paper
-                                sx={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 1.5,
-                                    px: 2.5,
-                                    py: 1,
-                                    borderRadius: 3,
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    bgcolor: 'white'
-                                }}
-                            >
-                                <LayoutGrid size={16} color="#94a3b8" />
-                                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
-                                    {products.length} Ürün Listeleniyor
-                                </Typography>
-                            </Paper>
-                        </Stack>
-
-                        {/* Products Content */}
-                        {loading ? (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 20 }}>
-                                <CircularProgress size={60} thickness={4} color="primary" />
-                                <Typography variant="overline" sx={{ mt: 3, fontWeight: 900, color: 'text.secondary', letterSpacing: '0.2em' }}>
-                                    Yükleniyor...
-                                </Typography>
-                            </Box>
-                        ) : products.length === 0 ? (
-                            <Paper
-                                variant="outlined"
-                                sx={{
-                                    textAlign: 'center',
-                                    py: 12,
-                                    borderRadius: 10,
-                                    borderStyle: 'dashed',
-                                    borderWidth: 4,
-                                    bgcolor: 'white'
-                                }}
-                            >
-                                <Avatar
-                                    sx={{
-                                        width: 80,
-                                        height: 80,
-                                        bgcolor: 'grey.50',
-                                        mx: 'auto',
-                                        mb: 3,
-                                        color: 'grey.300'
-                                    }}
-                                >
-                                    <SearchIcon size={40} />
-                                </Avatar>
-                                <Typography variant="h4" sx={{ mb: 2 }}>Ürün Bulunamadı</Typography>
-                                <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
-                                    Aradığınız kriterlere uygun bir ürün bulamadık. Lütfen farklı anahtar kelimeler deneyin.
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    color="secondary"
-                                    startIcon={<RefreshCw size={18} />}
-                                    onClick={() => {
-                                        setSearchInput('');
-                                        dispatch(setSearch(''));
-                                        dispatch(setCategory(null));
-                                        setSearchParams({});
-                                    }}
-                                    sx={{ borderRadius: 3, px: 4, py: 1.5, fontWeight: 800 }}
-                                >
-                                    Aramayı Sıfırla
-                                </Button>
-                            </Paper>
-                        ) : (
-                            <Box>
-                                <Grid container spacing={4}>
-                                    {products.map((product) => (
-                                        <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={product.id}>
-                                            <ProductCard product={product} />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-
-                                {/* Pagination */}
-                                {totalPages > 1 && (
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-                                        <Pagination
-                                            count={totalPages}
-                                            page={currentPage}
-                                            onChange={handlePageChange}
-                                            color="primary"
-                                            size="large"
-                                            sx={{
-                                                '& .MuiPaginationItem-root': {
-                                                    borderRadius: 4,
-                                                    fontWeight: 900,
-                                                    height: 48,
-                                                    minWidth: 48,
-                                                    border: '1px solid',
-                                                    borderColor: 'divider',
-                                                    bgcolor: 'white'
-                                                },
-                                                '& .Mui-selected': {
-                                                    boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.2)'
-                                                }
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
+                                    <Box component="form" onSubmit={handleSearch} sx={{ flexGrow: 1, maxWidth: { sm: 400 } }}>
+                                        <TextField
+                                            fullWidth
+                                            placeholder="Ürün Ara..."
+                                            value={searchInput}
+                                            onChange={(e) => setSearchInput(e.target.value)}
+                                            size="small"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start"><SearchIcon size={18} color="#94a3b8" /></InputAdornment>,
+                                                sx: { borderRadius: 3, bgcolor: 'white' }
                                             }}
                                         />
                                     </Box>
+                                    <FormControl size="small" sx={{ minWidth: 160 }}>
+                                        <InputLabel><Stack direction="row" alignItems="center" spacing={1}><ArrowUpDown size={14} /> Sırala</Stack></InputLabel>
+                                        <Select
+                                            value={sortBy}
+                                            label="Sırala"
+                                            onChange={handleSortChange}
+                                            sx={{ borderRadius: 3, bgcolor: 'white' }}
+                                        >
+                                            <MenuItem value="newest">En Yeniler</MenuItem>
+                                            <MenuItem value="price_asc">Fiyat (Düşükten Yükseğe)</MenuItem>
+                                            <MenuItem value="price_desc">Fiyat (Yüksekten Düşüğe)</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Stack>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={4}>
+                            {/* Sidebar Filters */}
+                            <Grid size={{ xs: 12, md: 3, lg: 2.5 }}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 3,
+                                        borderRadius: 4,
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        position: { md: 'sticky' },
+                                        top: { md: 100 }
+                                    }}
+                                >
+                                    <FilterSidebar />
+                                </Paper>
+                            </Grid>
+
+                            {/* Products Grid */}
+                            <Grid size={{ xs: 12, md: 9, lg: 9.5 }}>
+                                {loading ? (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 20 }}>
+                                        <CircularProgress size={60} thickness={4} />
+                                        <Typography variant="overline" sx={{ mt: 3, fontWeight: 900, color: 'text.secondary' }}>YÜKLENİYOR...</Typography>
+                                    </Box>
+                                ) : products.length === 0 ? (
+                                    <Paper sx={{ textAlign: 'center', py: 12, borderRadius: 6, border: '2px dashed', borderColor: 'divider', bgcolor: 'transparent' }}>
+                                        <Avatar sx={{ width: 80, height: 80, bgcolor: 'grey.50', mx: 'auto', mb: 3 }}><SearchIcon size={40} color="#94a3b8" /></Avatar>
+                                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 800 }}>Sonuç Bulunamadı</Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>Aradığınız kriterlere uygun ürün bulunmuyor.</Typography>
+                                        <Button variant="contained" onClick={() => dispatch(resetFilters())} sx={{ borderRadius: 2, px: 4 }}>Tüm Ürünleri Gör</Button>
+                                    </Paper>
+                                ) : (
+                                    <Box>
+                                        <Grid container spacing={3}>
+                                            {products.map((product) => (
+                                                <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={product.id}>
+                                                    <ProductCard product={product} />
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+
+                                        {totalPages > 1 && (
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+                                                <Pagination
+                                                    count={totalPages}
+                                                    page={currentPage}
+                                                    onChange={handlePageChange}
+                                                    color="primary"
+                                                    shape="rounded"
+                                                    sx={{
+                                                        '& .MuiPaginationItem-root': { fontWeight: 800, borderRadius: 2 }
+                                                    }}
+                                                />
+                                            </Box>
+                                        )}
+                                    </Box>
                                 )}
-                            </Box>
-                        )}
+                            </Grid>
+                        </Grid>
                     </Box>
                 </Fade>
             </Container>

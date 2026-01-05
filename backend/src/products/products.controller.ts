@@ -41,6 +41,12 @@ export class ProductsController {
         return this.productsService.getFeatured();
     }
 
+    @Get('filters')
+    @ApiOperation({ summary: 'Get available filter options (tags, benefits, price range)' })
+    getFilterOptions() {
+        return this.productsService.getFilterOptions();
+    }
+
     @Get(':id')
     @ApiOperation({ summary: 'Get a product by ID' })
     findOne(@Param('id') id: string) {

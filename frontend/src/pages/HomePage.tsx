@@ -49,7 +49,7 @@ export const HomePage = () => {
             // Reset category if not in URL (important fix for "Tümü" filter)
             dispatch(setCategory(null));
         }
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({}));
     }, [dispatch, searchParams]);
 
     useEffect(() => {

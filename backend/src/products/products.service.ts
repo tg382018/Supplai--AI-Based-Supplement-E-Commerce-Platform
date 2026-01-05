@@ -28,7 +28,7 @@ export class ProductsService {
     }
 
     async findAll(query: ProductQueryDto) {
-        const { search, categoryId, tags, page = 1, limit = 10, includeInactive = false } = query;
+        const { search, categoryId, tags, benefits, minPrice, maxPrice, sortBy, page = 1, limit = 10, includeInactive = false } = query;
         const skip = (page - 1) * limit;
 
         const where: any = {};
@@ -49,7 +49,26 @@ export class ProductsService {
         }
 
         if (tags && tags.length > 0) {
-            where.tags = { hasSome: tags };
+            where.tags = { hasSome: typeof tags === 'string' ? [tags] : tags };
+        }
+
+        if (benefits && benefits.length > 0) {
+            where.benefits = { hasSome: typeof benefits === 'string' ? [benefits] : benefits };
+        }
+
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            where.price = {};
+            if (minPrice !== undefined) where.price.gte = minPrice;
+            if (maxPrice !== undefined) where.price.lte = maxPrice;
+        }
+
+        const order: any = {};
+        if (sortBy === 'price_asc') {
+            order.price = 'asc';
+        } else if (sortBy === 'price_desc') {
+            order.price = 'desc';
+        } else {
+            order.createdAt = 'desc';
         }
 
         const [products, total] = await Promise.all([
@@ -60,9 +79,7 @@ export class ProductsService {
                 include: {
                     category: true,
                 },
-                orderBy: {
-                    createdAt: 'desc',
-                },
+                orderBy: order,
             }),
             this.prisma.product.count({ where }),
         ]);
@@ -75,6 +92,26 @@ export class ProductsService {
                 limit,
                 totalPages: Math.ceil(total / limit),
             },
+        };
+    }
+
+    async getFilterOptions() {
+        const products = await this.prisma.product.findMany({
+            where: { isActive: true },
+            select: { tags: true, benefits: true, price: true }
+        });
+
+        const tags = Array.from(new Set(products.flatMap(p => p.tags))).sort();
+        const benefits = Array.from(new Set(products.flatMap(p => p.benefits))).sort();
+        const prices = products.map(p => p.price);
+
+        return {
+            tags,
+            benefits,
+            priceRange: {
+                min: Math.min(...prices, 0),
+                max: Math.max(...prices, 1000)
+            }
         };
     }
 

@@ -45,7 +45,7 @@ export const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({}));
     }, [dispatch]);
 
     // Clear search term when navigating away from products page

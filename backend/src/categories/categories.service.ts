@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto';
+import { CreateCategoryDto, UpdateCategoryDto, CategoryQueryDto } from './dto';
 
 @Injectable()
 export class CategoriesService {
@@ -20,9 +20,10 @@ export class CategoriesService {
         });
     }
 
-    async findAll() {
+    async findAll(query: CategoryQueryDto = {}) {
+        const { includeInactive = false } = query;
         return this.prisma.category.findMany({
-            where: { isActive: true },
+            where: includeInactive ? {} : { isActive: true },
             include: {
                 _count: {
                     select: { products: { where: { isActive: true } } },

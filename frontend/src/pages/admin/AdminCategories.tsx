@@ -27,7 +27,7 @@ const AdminCategories: React.FC = () => {
     const [editName, setEditName] = useState('');
 
     useEffect(() => {
-        dispatch(fetchCategories());
+        dispatch(fetchCategories({}));
     }, [dispatch]);
 
     const handleAdd = async () => {

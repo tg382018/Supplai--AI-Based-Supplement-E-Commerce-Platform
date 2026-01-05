@@ -92,6 +92,29 @@ export class ProductQueryDto {
     @IsOptional()
     limit?: number = 10;
 
+    @ApiPropertyOptional()
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    minPrice?: number;
+
+    @ApiPropertyOptional()
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    maxPrice?: number;
+
+    @ApiPropertyOptional()
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    benefits?: string[];
+
+    @ApiPropertyOptional({ enum: ['price_asc', 'price_desc', 'newest'] })
+    @IsString()
+    @IsOptional()
+    sortBy?: string;
+
     @ApiPropertyOptional({ default: false })
     @IsBoolean()
     @IsOptional()

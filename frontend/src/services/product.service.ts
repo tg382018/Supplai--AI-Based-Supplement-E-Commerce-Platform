@@ -5,8 +5,13 @@ interface ProductQuery {
     search?: string;
     categoryId?: string;
     tags?: string[];
+    benefits?: string[];
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: string;
     page?: number;
     limit?: number;
+    includeInactive?: boolean;
 }
 
 export const productService = {
@@ -25,6 +30,11 @@ export const productService = {
         return response.data;
     },
 
+    async getFilterOptions(): Promise<{ tags: string[], benefits: string[], priceRange: { min: number, max: number } }> {
+        const response = await api.get('/products/filters');
+        return response.data;
+    },
+
     async createProduct(data: Partial<Product>): Promise<Product> {
         const response = await api.post<Product>('/products', data);
         return response.data;
@@ -39,8 +49,8 @@ export const productService = {
         await api.delete(`/products/${id}`);
     },
 
-    async getCategories(): Promise<Category[]> {
-        const response = await api.get<Category[]>('/categories');
+    async getCategories(params: any = {}): Promise<Category[]> {
+        const response = await api.get<Category[]>('/categories', { params });
         return response.data;
     },
 
