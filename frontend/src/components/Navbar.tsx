@@ -12,11 +12,14 @@ import {
     Tooltip,
     Menu,
     MenuItem,
-    Divider
+    Divider,
+    InputBase,
+    Paper
 } from '@mui/material';
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { logout } from '../store/slices';
+import { logout, fetchCategories, setSearch } from '../store/slices';
+import { useEffect } from 'react';
 import {
     ShoppingBag,
     LogOut,
@@ -33,9 +36,14 @@ export const Navbar = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
     const { items } = useAppSelector((state) => state.cart);
+    const { categories } = useAppSelector((state) => state.products);
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    useEffect(() => {
+        dispatch(fetchCategories());
+    }, [dispatch]);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -56,7 +64,7 @@ export const Navbar = () => {
             position="sticky"
             elevation={0}
             sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                bgcolor: 'rgba(255, 255, 255, 0.9)',
                 backdropFilter: 'blur(20px)',
                 borderBottom: '1px solid',
                 borderColor: 'divider',
@@ -136,9 +144,43 @@ export const Navbar = () => {
 
                     {/* Right Side Icons */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
-                        <IconButton size="large" sx={{ color: 'text.secondary' }}>
-                            <Search size={22} />
-                        </IconButton>
+                        {/* Search Bar */}
+                        <Paper
+                            component="form"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.currentTarget);
+                                const query = formData.get('search') as string;
+                                if (query.trim()) {
+                                    dispatch(setSearch(query));
+                                    navigate('/products');
+                                }
+                            }}
+                            sx={{
+                                p: '2px 4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                width: { xs: 120, sm: 200, md: 240 },
+                                borderRadius: 5,
+                                border: '1px solid',
+                                borderColor: 'grey.200',
+                                boxShadow: 'none',
+                                transition: 'all 0.3s ease',
+                                '&:hover, &:focus-within': {
+                                    borderColor: 'primary.main',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                }
+                            }}
+                        >
+                            <InputBase
+                                name="search"
+                                sx={{ ml: 2, flex: 1, fontSize: '0.9rem', fontWeight: 500 }}
+                                placeholder="Ürün arayın..."
+                            />
+                            <IconButton type="submit" sx={{ p: '8px', color: 'primary.main' }}>
+                                <Search size={20} />
+                            </IconButton>
+                        </Paper>
 
                         <IconButton
                             component={RouterLink}
@@ -266,6 +308,48 @@ export const Navbar = () => {
                     </Box>
                 </Toolbar>
             </Container>
+
+            {/* Category Strip */}
+            <Box sx={{ borderTop: '1px solid', borderColor: 'primary.dark', bgcolor: 'primary.main' }}>
+                <Container maxWidth="lg">
+                    <Box sx={{ display: 'flex', gap: 1, py: 1, overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
+                        <Button
+                            size="small"
+                            onClick={() => navigate('/products')}
+                            sx={{
+                                color: 'white',
+                                borderRadius: 2,
+                                minWidth: 'auto',
+                                px: 2,
+                                fontSize: '0.8rem',
+                                fontWeight: 600,
+                                '&:hover': { bgcolor: 'primary.dark' }
+                            }}
+                        >
+                            Tümü
+                        </Button>
+                        {categories.map((category) => (
+                            <Button
+                                key={category.id}
+                                size="small"
+                                onClick={() => navigate(`/products?category=${category.id}`)}
+                                sx={{
+                                    color: 'white',
+                                    borderRadius: 2,
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    whiteSpace: 'nowrap',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    '&:hover': { bgcolor: 'primary.dark' }
+                                }}
+                            >
+                                {category.name}
+                            </Button>
+                        ))}
+                    </Box>
+                </Container>
+            </Box>
         </AppBar>
     );
 };

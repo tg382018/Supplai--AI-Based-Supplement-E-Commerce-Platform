@@ -19,8 +19,7 @@ import {
     Bot,
     User,
     Sparkles,
-    RefreshCcw,
-    AlertCircle
+    RefreshCcw
 } from 'lucide-react';
 
 interface Message {
@@ -80,7 +79,7 @@ export const AiChat = () => {
     return (
         <Grid container spacing={4} sx={{ height: { lg: 600 } }}>
             {/* Chat Container */}
-            <Grid size={{ xs: 12, lg: recommendations.length > 0 ? 7 : 12 }}>
+            <Grid size={{ xs: 12, lg: recommendations.length > 0 ? 7 : 12 }} sx={{ height: '100%', minHeight: 0 }}>
                 <Paper
                     elevation={0}
                     sx={{
@@ -218,8 +217,8 @@ export const AiChat = () => {
 
             {/* Recommendations Sidebar */}
             {recommendations.length > 0 && (
-                <Grid size={{ xs: 12, lg: 5 }}>
-                    <Fade in timeout={800}>
+                <Grid size={{ xs: 12, lg: 5 }} sx={{ height: '100%', minHeight: 0 }}>
+                    <Fade in timeout={800} style={{ height: '100%' }}>
                         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 4 }}>
                                 <Avatar sx={{ bgcolor: 'secondary.main', borderRadius: 0 }}>
@@ -232,33 +231,10 @@ export const AiChat = () => {
                             <Box sx={{ flex: 1, overflowY: 'auto', pr: 2, '&::-webkit-scrollbar': { width: 6 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 } }}>
                                 <Stack spacing={3}>
                                     {recommendations.map((product) => (
-                                        <ProductCard key={product.id} product={product} />
+                                        <ProductCard key={product.id} product={product} compact />
                                     ))}
                                 </Stack>
                             </Box>
-
-                            <Paper
-                                sx={{
-                                    mt: 4,
-                                    p: 3,
-                                    bgcolor: 'emerald.50',
-                                    borderRadius: 0,
-                                    border: '1px solid',
-                                    borderColor: 'emerald.100',
-                                    display: 'flex',
-                                    gap: 3
-                                }}
-                            >
-                                <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 0 }}>
-                                    <AlertCircle size={24} color="white" />
-                                </Avatar>
-                                <Box>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Mükemmel Paket!</Typography>
-                                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                                        Yapay zekamız tarafından hazırlanan bu kombinasyon, belirttiğiniz hedefler için en yüksek verimi sağlayacak şekilde tasarlanmıştır.
-                                    </Typography>
-                                </Box>
-                            </Paper>
                         </Box>
                     </Fade>
                 </Grid>

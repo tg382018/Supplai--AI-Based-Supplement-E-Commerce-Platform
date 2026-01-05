@@ -18,9 +18,10 @@ import { ShoppingCart, CheckCircle2, PackageSearch } from 'lucide-react';
 
 interface ProductCardProps {
     product: Product;
+    compact?: boolean;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = ({ product, compact = false }: ProductCardProps) => {
     const dispatch = useAppDispatch();
 
     const handleAddToCart = (e: React.MouseEvent) => {
@@ -46,7 +47,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
             >
                 {/* Image Container */}
-                <Box sx={{ position: 'relative', pt: '100%', bgcolor: 'grey.50' }}>
+                <Box sx={{ position: 'relative', pt: compact ? '60%' : '100%', bgcolor: 'grey.50' }}>
                     <CardMedia
                         component="img"
                         image={product.imageUrl || ''}

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -7,7 +6,6 @@ import {
     Button,
     Grid,
     Stack,
-    Chip,
     Paper,
     Avatar,
     TextField,
@@ -19,17 +17,14 @@ import { useAppDispatch, useAppSelector } from '../hooks';
 import { fetchProducts, fetchCategories, setSearch, setCategory, setPage } from '../store/slices';
 import {
     ProductCard,
-    Footer
+    Footer,
+    HeroSlider
 } from '../components';
 import {
-    CheckCircle2,
     Search as SearchIcon,
     Filter,
     LayoutGrid,
     RefreshCw,
-    Sparkles,
-    Zap,
-    ShieldCheck,
     ShoppingBag
 } from 'lucide-react';
 
@@ -75,168 +70,8 @@ export const HomePage = () => {
 
     return (
         <Box sx={{ bgcolor: 'background.default' }}>
-            {/* Hero Section */}
-            <Box
-                component="section"
-                sx={{
-                    position: 'relative',
-                    minHeight: '85vh',
-                    display: 'flex',
-                    alignItems: 'center',
-                    overflow: 'hidden',
-                    bgcolor: 'white',
-                    py: { xs: 8, md: 0 }
-                }}
-            >
-                {/* Background Decor */}
-                <Box sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    zIndex: 0,
-                    opacity: 0.1,
-                    pointerEvents: 'none'
-                }}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: -100,
-                        left: -100,
-                        width: 400,
-                        height: 400,
-                        bgcolor: 'primary.main',
-                        borderRadius: '50%',
-                        filter: 'blur(100px)'
-                    }} />
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        right: -100,
-                        width: 320,
-                        height: 320,
-                        bgcolor: 'secondary.main',
-                        borderRadius: '50%',
-                        filter: 'blur(80px)'
-                    }} />
-                </Box>
-
-                <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-                    <Grid container spacing={8} alignItems="center">
-                        <Grid size={{ xs: 12, lg: 6 }}>
-                            <Box sx={{ animation: 'fade-up 0.6s ease-out' }}>
-                                <Chip
-                                    icon={<Sparkles size={16} />}
-                                    label="Yeni Nesil Supplement Deneyimi"
-                                    color="primary"
-                                    variant="outlined"
-                                    sx={{
-                                        mb: 4,
-                                        fontWeight: 800,
-                                        bgcolor: 'emerald.50',
-                                        borderColor: 'primary.light',
-                                        px: 1
-                                    }}
-                                />
-                                <Typography
-                                    variant="h1"
-                                    sx={{
-                                        fontSize: { xs: '3rem', md: '4.5rem' },
-                                        color: 'text.primary',
-                                        mb: 4,
-                                        lineHeight: 1.1
-                                    }}
-                                >
-                                    Sağlığınız İçin <br />
-                                    <Box component="span" sx={{ color: 'primary.main', fontStyle: 'italic' }}>Zeki</Box> Seçimler
-                                </Typography>
-                                <Typography
-                                    variant="h6"
-                                    color="text.secondary"
-                                    sx={{ mb: 6, fontWeight: 500, lineHeight: 1.6, maxWidth: 500 }}
-                                >
-                                    AI asistanımız hedeflerinizi anlar, vücudunuzun ihtiyaç duyduğu en doğru takviyeleri saniyeler içinde size özel olarak seçer.
-                                </Typography>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-                                    <Button
-                                        component={RouterLink}
-                                        to="/ai-advisor"
-                                        variant="contained"
-                                        size="large"
-                                        endIcon={<Zap size={20} />}
-                                        sx={{
-                                            px: 5,
-                                            py: 2,
-                                            fontSize: '1.1rem',
-                                            boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)'
-                                        }}
-                                    >
-                                        AI Danışmana Sor
-                                    </Button>
-                                    <Button
-                                        component={RouterLink}
-                                        to="/products"
-                                        variant="outlined"
-                                        color="secondary"
-                                        size="large"
-                                        sx={{ px: 5, py: 2, fontSize: '1.1rem' }}
-                                    >
-                                        Mağazayı Gez
-                                    </Button>
-                                </Stack>
-
-                                <Stack direction="row" spacing={4} sx={{ mt: 8, opacity: 0.5 }}>
-                                    {['Lab Onaylı', '%100 Doğal', 'GMP Sertifikalı'].map(text => (
-                                        <Box key={text} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <CheckCircle2 size={18} />
-                                            <Typography variant="caption" sx={{ fontWeight: 800 }}>{text}</Typography>
-                                        </Box>
-                                    ))}
-                                </Stack>
-                            </Box>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, lg: 6 }} sx={{ display: { xs: 'none', lg: 'block' } }}>
-                            <Box sx={{ position: 'relative' }}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        borderRadius: 8,
-                                        overflow: 'hidden',
-                                        border: '8px solid white',
-                                        boxShadow: '0 30px 60px rgba(0,0,0,0.12)'
-                                    }}
-                                >
-                                    <Box
-                                        component="img"
-                                        src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                                        sx={{ width: '100%', height: 600, objectFit: 'cover' }}
-                                    />
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        bottom: 24,
-                                        left: 24,
-                                        right: 24,
-                                        bgcolor: 'rgba(255, 255, 255, 0.8)',
-                                        backdropFilter: 'blur(20px)',
-                                        p: 3,
-                                        borderRadius: 4,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 2
-                                    }}>
-                                        <Avatar sx={{ bgcolor: 'primary.main', p: 1, borderRadius: 2 }}>
-                                            <ShieldCheck color="white" />
-                                        </Avatar>
-                                        <Box>
-                                            <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>Güvenilir İçerik</Typography>
-                                            <Typography variant="caption" color="text.secondary">Tüm ürünlerimiz test edilmiş ve onaylanmıştır.</Typography>
-                                        </Box>
-                                    </Box>
-                                </Paper>
-
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </Box>
+            {/* Hero Slider */}
+            <HeroSlider />
 
 
 
