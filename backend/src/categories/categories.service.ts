@@ -22,9 +22,10 @@ export class CategoriesService {
 
     async findAll() {
         return this.prisma.category.findMany({
+            where: { isActive: true },
             include: {
                 _count: {
-                    select: { products: true },
+                    select: { products: { where: { isActive: true } } },
                 },
             },
             orderBy: { name: 'asc' },
@@ -61,8 +62,9 @@ export class CategoriesService {
     async remove(id: string) {
         await this.findOne(id);
 
-        return this.prisma.category.delete({
+        return this.prisma.category.update({
             where: { id },
+            data: { isActive: false },
         });
     }
 }

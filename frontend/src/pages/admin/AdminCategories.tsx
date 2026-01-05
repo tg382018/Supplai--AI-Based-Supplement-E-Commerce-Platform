@@ -51,7 +51,11 @@ const AdminCategories: React.FC = () => {
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Bu kategoriyi silmek istediğinize emin misiniz?')) {
-            await dispatch(deleteCategory(id));
+            try {
+                await dispatch(deleteCategory(id)).unwrap();
+            } catch (error: any) {
+                alert('Kategori silinemedi: ' + error);
+            }
         }
     };
 

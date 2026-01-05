@@ -47,8 +47,12 @@ const AdminProducts: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
-            await dispatch(deleteProduct(id));
+        if (window.confirm('Bu ürünü silmek (pasife almak) istediğinize emin misiniz?')) {
+            try {
+                await dispatch(deleteProduct(id)).unwrap();
+            } catch (error: any) {
+                alert('Ürün silinemedi: ' + error);
+            }
         }
     };
 
@@ -141,21 +145,27 @@ const AdminProducts: React.FC = () => {
                                     </TableCell>
                                     <TableCell align="right">
                                         <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                            <Tooltip title="Düzenle">
-                                                <IconButton
-                                                    onClick={() => handleEdit(product)}
-                                                    sx={{ color: 'primary.main', bgcolor: 'emerald.50', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}
-                                                >
-                                                    <Pencil size={18} />
-                                                </IconButton>
+                                            <Tooltip title={product.isActive ? "Düzenle" : "Pasif ürün düzenlenemez"}>
+                                                <span>
+                                                    <IconButton
+                                                        onClick={() => handleEdit(product)}
+                                                        disabled={!product.isActive}
+                                                        sx={{ color: 'primary.main', bgcolor: 'emerald.50', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </IconButton>
+                                                </span>
                                             </Tooltip>
-                                            <Tooltip title="Sil">
-                                                <IconButton
-                                                    onClick={() => handleDelete(product.id)}
-                                                    sx={{ color: 'error.main', bgcolor: 'error.50', '&:hover': { bgcolor: 'error.main', color: 'white' } }}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </IconButton>
+                                            <Tooltip title={product.isActive ? "Sil" : "Ürün zaten pasif"}>
+                                                <span>
+                                                    <IconButton
+                                                        onClick={() => handleDelete(product.id)}
+                                                        disabled={!product.isActive}
+                                                        sx={{ color: 'error.main', bgcolor: 'error.50', '&:hover': { bgcolor: 'error.main', color: 'white' } }}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </IconButton>
+                                                </span>
                                             </Tooltip>
                                         </Stack>
                                     </TableCell>

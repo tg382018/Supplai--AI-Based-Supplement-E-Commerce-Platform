@@ -45,6 +45,7 @@ model Category {
   description String?
   imageUrl    String?
   products    Product[]
+  isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
