@@ -56,10 +56,16 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: build-stage
     container_name: supplai-frontend
     ports:
-      - "80:80"
+      - "80:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
     depends_on:
       - backend
 

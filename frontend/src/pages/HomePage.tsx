@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -33,13 +34,33 @@ export const HomePage = () => {
     const { products, categories, loading, search, selectedCategory, currentPage, totalPages } = useAppSelector(
         (state) => state.products
     );
-    const [searchInput, setSearchInput] = useState(search || '');
+    const [searchInput, setSearchInput] = useState(''); // Changed initial state to empty string
+    const [searchParams] = useSearchParams(); // Added useSearchParams hook
 
     useEffect(() => {
+        // Clear search when entering homepage
+        dispatch(setSearch(''));
+        setSearchInput('');
+
+        const category = searchParams.get('category');
+        if (category) {
+            dispatch(setCategory(category));
+        } else {
+            // Reset category if not in URL (important fix for "Tümü" filter)
+            dispatch(setCategory(null));
+        }
         dispatch(fetchCategories());
-    }, [dispatch]);
+    }, [dispatch, searchParams]);
 
     useEffect(() => {
+        // Race condition fix:
+        // If searchInput is empty (meaning we are on fresh homepage)
+        // BUT search (redux state) is NOT empty (meaning it hasn't been reset yet),
+        // we SKIP this fetch to avoid showing stale search results.
+        if (searchInput === '' && search !== '') {
+            return;
+        }
+
         dispatch(
             fetchProducts({
                 search,
@@ -47,7 +68,7 @@ export const HomePage = () => {
                 page: currentPage,
             })
         );
-    }, [dispatch, search, selectedCategory, currentPage]);
+    }, [dispatch, search, selectedCategory, currentPage, searchInput]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();

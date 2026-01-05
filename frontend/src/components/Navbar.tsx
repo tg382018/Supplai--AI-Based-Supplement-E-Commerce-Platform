@@ -1,4 +1,4 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import {
     AppBar,
     Toolbar,
@@ -34,16 +34,25 @@ import {
 export const Navbar = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
     const { items } = useAppSelector((state) => state.cart);
     const { categories } = useAppSelector((state) => state.products);
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         dispatch(fetchCategories());
     }, [dispatch]);
+
+    // Clear search term when navigating away from products page
+    useEffect(() => {
+        if (location.pathname !== '/products') {
+            setSearchTerm('');
+        }
+    }, [location.pathname]);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -57,6 +66,14 @@ export const Navbar = () => {
         handleCloseUserMenu();
         await dispatch(logout());
         navigate('/');
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            dispatch(setSearch(searchTerm));
+            navigate('/products');
+        }
     };
 
     return (
@@ -81,35 +98,19 @@ export const Navbar = () => {
                             display: 'flex',
                             alignItems: 'center',
                             textDecoration: 'none',
-                            color: 'inherit',
-                            mr: 4,
-                            '&:hover .logo-icon': { transform: 'rotate(12deg)' }
+                            mr: 4
                         }}
                     >
                         <Box
-                            className="logo-icon"
+                            component="img"
+                            src="/logosupplai.png"
+                            alt="Supplai Logo"
                             sx={{
-                                bgcolor: 'primary.main',
-                                p: 1,
-                                borderRadius: 1.5,
-                                display: 'flex',
-                                mr: 1.5,
-                                transition: 'transform 0.3s ease'
+                                height: 70,
+                                width: 'auto',
+                                display: 'block'
                             }}
-                        >
-                            <ShoppingBag size={24} color="white" />
-                        </Box>
-                        <Typography
-                            variant="h5"
-                            noWrap
-                            sx={{
-                                fontWeight: 900,
-                                letterSpacing: '-0.02em',
-                                display: { xs: 'none', sm: 'block' }
-                            }}
-                        >
-                            Supp<Box component="span" sx={{ color: 'primary.main' }}>lai</Box>
-                        </Typography>
+                        />
                     </Box>
 
                     {/* Desktop Navigation */}
@@ -147,15 +148,7 @@ export const Navbar = () => {
                         {/* Search Bar */}
                         <Paper
                             component="form"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                const formData = new FormData(e.currentTarget);
-                                const query = formData.get('search') as string;
-                                if (query.trim()) {
-                                    dispatch(setSearch(query));
-                                    navigate('/products');
-                                }
-                            }}
+                            onSubmit={handleSearch}
                             sx={{
                                 p: '2px 4px',
                                 display: 'flex',
@@ -174,6 +167,8 @@ export const Navbar = () => {
                         >
                             <InputBase
                                 name="search"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 sx={{ ml: 2, flex: 1, fontSize: '0.9rem', fontWeight: 500 }}
                                 placeholder="Ürün arayın..."
                             />

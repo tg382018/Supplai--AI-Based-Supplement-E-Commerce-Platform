@@ -84,6 +84,7 @@ export class OrdersService {
     }
 
     async findOne(id: string, userId?: string) {
+        console.log(`Debug: findOne called with id=${id}, userId=${userId}`);
         const where: any = { id };
         if (userId) {
             where.userId = userId;
@@ -102,6 +103,10 @@ export class OrdersService {
         });
 
         if (!order) {
+            console.log(`Debug: Order not found for id=${id}, userId=${userId}`);
+            // Check if order exists at all
+            const exists = await this.prisma.order.findUnique({ where: { id } });
+            console.log(`Debug: Does order exist without userId filter? ${!!exists}. Order owner: ${exists?.userId}`);
             throw new NotFoundException('Order not found');
         }
 

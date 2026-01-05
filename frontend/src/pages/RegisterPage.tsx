@@ -74,7 +74,6 @@ export const RegisterPage = () => {
                         elevation={0}
                         sx={{
                             p: { xs: 4, sm: 6 },
-                            borderRadius: 10,
                             border: '1px solid',
                             borderColor: 'divider',
                             overflow: 'hidden',
@@ -90,21 +89,15 @@ export const RegisterPage = () => {
                                     textDecoration: 'none',
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    gap: 1.5,
                                     mb: 4
                                 }}
                             >
-                                <Typography sx={{ fontSize: '2rem' }}>💊</Typography>
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        fontWeight: 900,
-                                        color: 'primary.main',
-                                        letterSpacing: '-0.02em'
-                                    }}
-                                >
-                                    Supplai
-                                </Typography>
+                                <Box
+                                    component="img"
+                                    src="/logosupplai.png"
+                                    alt="Supplai"
+                                    sx={{ height: 70 }}
+                                />
                             </Box>
                             <Typography variant="h3" sx={{ mb: 1.5 }}>Aramıza Katılın</Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -115,7 +108,7 @@ export const RegisterPage = () => {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Stack spacing={2.5}>
                                 {error && (
-                                    <Alert severity="error" sx={{ borderRadius: 3, fontWeight: 700 }}>
+                                    <Alert severity="error" sx={{ fontWeight: 700 }}>
                                         {error}
                                     </Alert>
                                 )}
@@ -134,7 +127,7 @@ export const RegisterPage = () => {
                                                     <User size={18} color="#94a3b8" />
                                                 </InputAdornment>
                                             ),
-                                            sx: { borderRadius: 4 }
+                                            sx: {}
                                         }
                                     }}
                                 />
@@ -159,7 +152,7 @@ export const RegisterPage = () => {
                                                     <Mail size={18} color="#94a3b8" />
                                                 </InputAdornment>
                                             ),
-                                            sx: { borderRadius: 4 }
+                                            sx: {}
                                         }
                                     }}
                                 />
@@ -193,7 +186,7 @@ export const RegisterPage = () => {
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
-                                            sx: { borderRadius: 4 }
+                                            sx: {}
                                         }
                                     }}
                                 />
@@ -216,7 +209,7 @@ export const RegisterPage = () => {
                                                     <Lock size={18} color="#94a3b8" />
                                                 </InputAdornment>
                                             ),
-                                            sx: { borderRadius: 4 }
+                                            sx: {}
                                         }
                                     }}
                                 />
@@ -231,7 +224,6 @@ export const RegisterPage = () => {
                                     sx={{
                                         py: 2,
                                         mt: 1,
-                                        borderRadius: 4,
                                         fontSize: '1.1rem',
                                         boxShadow: '0 20px 40px rgba(16, 185, 129, 0.2)'
                                     }}
