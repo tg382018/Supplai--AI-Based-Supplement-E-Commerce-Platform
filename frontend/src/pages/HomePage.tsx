@@ -99,7 +99,7 @@ export const HomePage = () => {
 
 
             {/* All Products Section (Replaces Featured) */}
-            <Box id="all-products-section" component="section" sx={{ py: { xs: 12, md: 16 }, bgcolor: 'background.default' }}>
+            <Box id="all-products-section" component="section" sx={{ pb: { xs: 12, md: 16 }, pt: 0, bgcolor: 'background.default' }}>
                 <Container maxWidth="lg">
                     {/* Header & Search */}
                     <Stack

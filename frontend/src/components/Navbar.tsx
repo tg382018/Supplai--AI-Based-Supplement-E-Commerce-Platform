@@ -353,6 +353,27 @@ export const Navbar = () => {
                                 {category.name}
                             </Button>
                         ))}
+                        <Box sx={{ flexGrow: 1 }} />
+                        {isAuthenticated && (
+                            <Button
+                                size="small"
+                                onClick={() => navigate('/orders')}
+                                startIcon={<ClipboardList size={14} />}
+                                sx={{
+                                    color: 'white',
+                                    borderRadius: 2,
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    whiteSpace: 'nowrap',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700,
+                                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                                    '&:hover': { bgcolor: 'primary.dark' }
+                                }}
+                            >
+                                Siparişlerim
+                            </Button>
+                        )}
                     </Box>
                 </Container>
             </Box>

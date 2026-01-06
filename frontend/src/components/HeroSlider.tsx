@@ -36,7 +36,7 @@ export const HeroSlider = () => {
                 height: { xs: 300, md: 500, lg: 600 },
                 overflow: 'hidden',
                 borderRadius: 0,
-                bgcolor: 'white'
+                bgcolor: 'background.default'
             }}
         >
             {slides.map((step, index) => (
@@ -53,7 +53,7 @@ export const HeroSlider = () => {
                         backgroundImage: `url(${step})`,
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'top center',
+                        backgroundPosition: 'top',
                     }}
                 />
             ))}
@@ -90,34 +90,6 @@ export const HeroSlider = () => {
             >
                 <ChevronRight size={32} />
             </IconButton>
-
-            {/* Indicators */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    bottom: 24,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    gap: 1.5
-                }}
-            >
-                {slides.map((_, index) => (
-                    <Box
-                        key={index}
-                        onClick={() => setActiveStep(index)}
-                        sx={{
-                            width: activeStep === index ? 32 : 12,
-                            height: 6,
-                            borderRadius: 4,
-                            bgcolor: activeStep === index ? 'primary.main' : 'rgba(255,255,255,0.6)',
-                            transition: 'all 0.3s ease',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
-                    />
-                ))}
-            </Box>
         </Paper>
     );
 };
