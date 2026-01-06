@@ -29,7 +29,7 @@ export class ProductsService {
 
     async findAll(query: ProductQueryDto) {
         console.log('--- ProductsService.findAll called with query:', JSON.stringify(query, null, 2));
-        const { search, categoryId, benefits, minPrice, maxPrice, sortBy, page = 1, limit = 10, includeInactive = false } = query;
+        const { search, categoryId, benefits, sortBy, page = 1, limit = 10, includeInactive = false } = query;
         const skip = (page - 1) * limit;
 
         const where: any = {};
@@ -51,13 +51,6 @@ export class ProductsService {
 
         if (benefits && benefits.length > 0) {
             where.benefits = { hasSome: typeof benefits === 'string' ? [benefits] : benefits };
-        }
-
-        if (minPrice !== undefined || maxPrice !== undefined) {
-            where.price = {};
-            if (minPrice !== undefined) where.price.gte = Number(minPrice);
-            if (maxPrice !== undefined) where.price.lte = Number(maxPrice);
-            console.log('--- Price Filter Applied:', where.price);
         }
 
         const order: any = {};
@@ -99,16 +92,14 @@ export class ProductsService {
             select: { tags: true, benefits: true, price: true }
         });
 
-        const tags = Array.from(new Set(products.flatMap(p => p.tags))).sort();
         const benefits = Array.from(new Set(products.flatMap(p => p.benefits))).sort();
         const prices = products.map(p => p.price);
 
         return {
-            tags,
             benefits,
             priceRange: {
-                min: Math.min(...prices, 0),
-                max: Math.max(...prices, 1000)
+                min: Math.floor(Math.min(...prices, 0)),
+                max: Math.ceil(Math.max(...prices, 1000))
             }
         };
     }

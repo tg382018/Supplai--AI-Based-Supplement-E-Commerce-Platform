@@ -4,9 +4,7 @@ import { productService } from '../../services';
 import type { Product, Category, PaginatedResponse } from '../../types';
 
 interface FilterOptions {
-    tags: string[];
     benefits: string[];
-    priceRange: { min: number; max: number };
 }
 
 interface ProductsState {
@@ -15,9 +13,7 @@ interface ProductsState {
     categories: Category[];
     filterOptions: FilterOptions;
     selectedCategory: string | null;
-    selectedTags: string[];
     selectedBenefits: string[];
-    priceRange: [number, number];
     sortBy: string;
     search: string;
     currentPage: number;
@@ -32,14 +28,10 @@ const initialState: ProductsState = {
     featured: [],
     categories: [],
     filterOptions: {
-        tags: [],
         benefits: [],
-        priceRange: { min: 0, max: 1000 }
     },
     selectedCategory: null,
-    selectedTags: [],
     selectedBenefits: [],
-    priceRange: [0, 1000],
     sortBy: 'newest',
     search: '',
     currentPage: 1,
@@ -194,30 +186,20 @@ const productsSlice = createSlice({
             state.selectedCategory = action.payload;
             state.currentPage = 1;
         },
-        setTags: (state, action: PayloadAction<string[]>) => {
-            state.selectedTags = action.payload;
-            state.currentPage = 1;
-        },
         setBenefits: (state, action: PayloadAction<string[]>) => {
             state.selectedBenefits = action.payload;
             state.currentPage = 1;
         },
-        setPriceRange: (state, action: PayloadAction<[number, number]>) => {
-            state.priceRange = action.payload;
-            state.currentPage = 1;
-        },
         setSortBy: (state, action: PayloadAction<string>) => {
-            state.sortBy = action.payload;
             state.currentPage = 1;
+            state.sortBy = action.payload;
         },
         setPage: (state, action: PayloadAction<number>) => {
             state.currentPage = action.payload;
         },
         resetFilters: (state) => {
             state.selectedCategory = null;
-            state.selectedTags = [];
             state.selectedBenefits = [];
-            state.priceRange = [state.filterOptions.priceRange.min, state.filterOptions.priceRange.max];
             state.sortBy = 'newest';
             state.search = '';
             state.currentPage = 1;
@@ -248,10 +230,6 @@ const productsSlice = createSlice({
             })
             .addCase(fetchFilterOptions.fulfilled, (state, action) => {
                 state.filterOptions = action.payload;
-                // Update initial price range if it hasn't been touched or is [0, 1000]
-                if (state.priceRange[0] === 0 && state.priceRange[1] === 1000) {
-                    state.priceRange = [action.payload.priceRange.min, action.payload.priceRange.max];
-                }
             })
             .addCase(addProduct.fulfilled, (state, action) => {
                 state.products.unshift(action.payload);
@@ -283,9 +261,7 @@ const productsSlice = createSlice({
 export const {
     setSearch,
     setCategory,
-    setTags,
     setBenefits,
-    setPriceRange,
     setSortBy,
     setPage,
     resetFilters

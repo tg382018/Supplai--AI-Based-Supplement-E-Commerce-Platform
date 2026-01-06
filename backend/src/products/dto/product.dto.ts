@@ -74,13 +74,6 @@ export class ProductQueryDto {
     @IsOptional()
     categoryId?: string;
 
-    @ApiPropertyOptional()
-    @IsArray()
-    @IsString({ each: true })
-    @IsOptional()
-    @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
-    tags?: string[];
-
     @ApiPropertyOptional({ default: 1 })
     @IsNumber()
     @Type(() => Number)
@@ -92,18 +85,6 @@ export class ProductQueryDto {
     @Type(() => Number)
     @IsOptional()
     limit?: number = 10;
-
-    @ApiPropertyOptional()
-    @IsNumber()
-    @IsOptional()
-    @Type(() => Number)
-    minPrice?: number;
-
-    @ApiPropertyOptional()
-    @IsNumber()
-    @IsOptional()
-    @Type(() => Number)
-    maxPrice?: number;
 
     @ApiPropertyOptional()
     @IsArray()
@@ -120,6 +101,6 @@ export class ProductQueryDto {
     @ApiPropertyOptional({ default: false })
     @IsBoolean()
     @IsOptional()
-    @Type(() => Boolean)
+    @Transform(({ value }) => value === 'true' || value === true)
     includeInactive?: boolean;
 }

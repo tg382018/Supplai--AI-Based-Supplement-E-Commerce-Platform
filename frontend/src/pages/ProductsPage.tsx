@@ -14,7 +14,6 @@ import {
     Paper,
     Fade,
     Avatar,
-    Slider,
     Checkbox,
     FormControlLabel,
     FormGroup,
@@ -32,7 +31,6 @@ import {
     setSearch,
     setCategory,
     setBenefits,
-    setPriceRange,
     setSortBy,
     setPage,
     resetFilters
@@ -44,7 +42,6 @@ import {
     RefreshCw,
     ShoppingBag,
     Beaker,
-    Coins,
     ArrowUpDown
 } from 'lucide-react';
 
@@ -59,18 +56,12 @@ export const ProductsPage = () => {
         search,
         selectedCategory,
         selectedBenefits,
-        priceRange,
         sortBy,
         currentPage,
         totalPages
     } = useAppSelector((state) => state.products);
 
     const [searchInput, setSearchInput] = useState(search);
-    const [localPriceRange, setLocalPriceRange] = useState<number[]>(priceRange);
-
-    useEffect(() => {
-        setLocalPriceRange(priceRange);
-    }, [priceRange]);
 
     useEffect(() => {
         const category = searchParams.get('category');
@@ -87,13 +78,11 @@ export const ProductsPage = () => {
                 search,
                 categoryId: selectedCategory || undefined,
                 benefits: selectedBenefits.length > 0 ? selectedBenefits : undefined,
-                minPrice: priceRange[0],
-                maxPrice: priceRange[1],
                 sortBy,
                 page: currentPage,
             })
         );
-    }, [dispatch, search, selectedCategory, selectedBenefits, priceRange, sortBy, currentPage]);
+    }, [dispatch, search, selectedCategory, selectedBenefits, sortBy, currentPage]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,14 +103,6 @@ export const ProductsPage = () => {
             ? selectedBenefits.filter(b => b !== benefit)
             : [...selectedBenefits, benefit];
         dispatch(setBenefits(newBenefits));
-    };
-
-    const handlePriceChange = (_event: Event, newValue: number | number[]) => {
-        setLocalPriceRange(newValue as number[]);
-    };
-
-    const handlePriceChangeCommitted = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
-        dispatch(setPriceRange(newValue as [number, number]));
     };
 
     const handleSortChange = (event: any) => {
@@ -180,43 +161,9 @@ export const ProductsPage = () => {
 
             <Divider />
 
-            {/* Price Range */}
-            <Box>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
-                    <Coins size={18} color="#10b981" />
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Fiyat Aralığı</Typography>
-                </Stack>
-                <Box sx={{ px: 1 }}>
-                    <Slider
-                        value={localPriceRange}
-                        onChange={handlePriceChange}
-                        onChangeCommitted={handlePriceChangeCommitted}
-                        valueLabelDisplay="auto"
-                        min={filterOptions.priceRange.min}
-                        max={filterOptions.priceRange.max}
-                        sx={{
-                            color: 'primary.main',
-                            '& .MuiSlider-thumb': {
-                                width: 20,
-                                height: 20,
-                                bgcolor: 'white',
-                                border: '2px solid currentColor',
-                                '&:hover': { boxShadow: '0 0 0 8px rgba(16, 185, 129, 0.16)' },
-                            },
-                        }}
-                    />
-                    <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
-                            ₺{localPriceRange[0]}
-                        </Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
-                            ₺{localPriceRange[1]}
-                        </Typography>
-                    </Stack>
-                </Box>
-            </Box>
-
             <Divider />
+
+            {/* Benefits / Content */}
 
             {/* Benefits / Content */}
             <Box>

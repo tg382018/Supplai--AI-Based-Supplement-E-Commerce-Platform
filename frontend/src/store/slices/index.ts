@@ -8,9 +8,7 @@ export {
     fetchFilterOptions,
     setSearch,
     setCategory,
-    setTags,
     setBenefits,
-    setPriceRange,
     setSortBy,
     setPage,
     resetFilters
